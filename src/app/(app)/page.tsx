@@ -1,19 +1,33 @@
+import Link from 'next/link'
 import React from 'react'
-import './globals.scss'
-import { Inter } from 'next/font/google'
+import config from '@payload-config'
+import { getPayloadHMR } from '@payloadcms/next/utilities'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-})
+const Page = async () => {
+  const payload = await getPayloadHMR({
+    config,
+  })
 
-/* Our app sits here to not cause any conflicts with payload's root layout  */
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const data = await payload.find({
+    collection: 'users',
+    depth: 1,
+  })
   return (
-    <html className={inter.className}>
-      <body>{children}</body>
-    </html>
+    <>
+      <main>
+        <h1>Users</h1>
+        <ul className='prose'>
+          {data.docs.map((user) => (
+            <li key={user.id}>
+              <Link href={`/users/${user.id}`}>
+                {user.email}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </main>
+    </>
   )
 }
 
-export default Layout
+export default Page
