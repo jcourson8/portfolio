@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const { fontFamily } = require("tailwindcss/defaultTheme")
+
 module.exports = {
   content: [
     './pages/**/*.{ts,tsx}',
@@ -6,10 +8,7 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
-  theme: {
-    extend: {},
-  },
-  darkMode: ['selector', '[data-theme="dark"]'],
+  darkMode: ['selector', '[data-theme="dark"]', 'class'],
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
   prefix: '',
   safelist: [
@@ -92,10 +91,14 @@ module.exports = {
         success: 'hsl(var(--success))',
         error: 'hsl(var(--error))',
         warning: 'hsl(var(--warning))',
+        blue: {
+          400: '#60A5FA',
+          600: '#2563EB',
+        },
       },
       fontFamily: {
-        mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
+        sans: ["Inter", "var(--font-inter)", ...fontFamily.sans],
+        mono: ["JetBrains Mono", "var(--font-jetbrains-mono)", ...fontFamily.mono],
       },
       keyframes: {
         'accordion-down': {
@@ -112,10 +115,46 @@ module.exports = {
           css: {
             '--tw-prose-body': 'var(--text)',
             '--tw-prose-headings': 'var(--text)',
+            fontFamily: theme('fontFamily.sans').join(', '),
             h1: {
-              fontSize: '4rem',
-              fontWeight: 'normal',
-              marginBottom: '0.25em',
+              fontFamily: theme('fontFamily.sans').join(', '),
+              fontSize: '2.25rem',
+              fontWeight: '700',
+              lineHeight: '1.2',
+              marginBottom: '1rem',
+            },
+            h2: {
+              fontFamily: theme('fontFamily.sans').join(', '),
+              fontSize: '1.875rem',
+              fontWeight: '600',
+              lineHeight: '1.3',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            },
+            h3: {
+              fontFamily: theme('fontFamily.sans').join(', '),
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              lineHeight: '1.4',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            },
+            p: {
+              marginBottom: '1rem',
+            },
+            a: {
+              color: theme('colors.blue.600'),
+              '&:hover': {
+                color: theme('colors.blue.800'),
+              },
+            },
+            code: {
+              fontFamily: theme('fontFamily.mono').join(', '),
+              fontSize: '0.875em',
+              fontWeight: '400',
+              backgroundColor: theme('colors.gray.100'),
+              padding: '0.2em 0.4em',
+              borderRadius: '0.25rem',
             },
           },
         },

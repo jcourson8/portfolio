@@ -1,19 +1,24 @@
 import React from 'react'
 import './globals.css';
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
+import { ConversationProvider } from '@/context/ConversationContext';
 
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap',
+  variable: '--font-inter',
 })
 
-/* Our app sits here to not cause any conflicts with payload's root layout  */
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+})
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className={inter.className}>
-      <body>{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className={`font-sans ${inter.className}`}>
+        <ConversationProvider>{children}</ConversationProvider>
+      </body>
     </html>
   )
 }
-
-export default Layout
