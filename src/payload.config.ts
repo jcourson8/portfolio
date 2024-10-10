@@ -11,7 +11,6 @@ import { Projects } from './collections/Projects'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const emptyModulePath = path.resolve(__dirname, './payload-cms/config/mocks/emptyModule')
 
 export default buildConfig({
   admin: {
@@ -39,5 +38,4 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
-  
 })

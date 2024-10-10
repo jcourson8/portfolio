@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Conversation, Message } from '@/types';
 
 export function useConversations() {
@@ -6,105 +6,81 @@ export function useConversations() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
+  // Load conversations from localStorage on mount
   useEffect(() => {
     const storedConversations = localStorage.getItem('conversations');
-    const storedSelectedConversation = localStorage.getItem('selectedConversation');
-    
     if (storedConversations) {
       const parsedConversations = JSON.parse(storedConversations);
       setConversations(parsedConversations);
       setIsSidebarExpanded(parsedConversations.length > 0);
     }
-    
-    if (storedSelectedConversation) {
-      setSelectedConversation(storedSelectedConversation);
-    }
   }, []);
 
+  // Save conversations to localStorage when they change
   useEffect(() => {
     localStorage.setItem('conversations', JSON.stringify(conversations));
   }, [conversations]);
 
-  useEffect(() => {
-    if (selectedConversation) {
-      localStorage.setItem('selectedConversation', selectedConversation);
-    } else {
-      localStorage.removeItem('selectedConversation');
-    }
-  }, [selectedConversation]);
-
   const addMessageToConversation = (message: Message, conversationId: string) => {
-    setConversations(prevConversations => {
-      const updatedConversations = prevConversations.map(conv =>
-        conv.id === conversationId
-          ? { ...conv, messages: [...conv.messages, message] }
-          : conv
+    setConversations(prev => {
+      const updated = prev.map(conv =>
+        conv.id === conversationId ? { ...conv, messages: [...conv.messages, message] } : conv
       );
-      if (!updatedConversations.some(conv => conv.id === conversationId)) {
-        updatedConversations.push({
-          id: conversationId,
-          messages: [message],
-        });
+      if (!updated.some(conv => conv.id === conversationId)) {
+        updated.push({ id: conversationId, messages: [message] });
       }
-      return updatedConversations;
+      return updated;
     });
     setSelectedConversation(conversationId);
     setIsSidebarExpanded(true);
   };
 
-  const updateLastMessage = (conversationId: string, updatedMessage: Partial<Message>) => {
-    setConversations(prevConversations => {
-      return prevConversations.map(conv => {
-        if (conv.id === conversationId && conv.messages.length > 0) {
-          const lastMessageIndex = conv.messages.length - 1;
-          const updatedMessages = [...conv.messages];
-          updatedMessages[lastMessageIndex] = {
-            ...updatedMessages[lastMessageIndex],
-            ...updatedMessage,
-          };
-          return { ...conv, messages: updatedMessages };
-        }
-        return conv;
-      });
-    });
+  const updateMessageInConversation = (conversationId: string, messageId: string, updates: Partial<Message>) => {
+    setConversations(prev => prev.map(conv => {
+      if (conv.id === conversationId) {
+        return {
+          ...conv,
+          messages: conv.messages.map(msg => (msg.id === messageId ? { ...msg, ...updates } : msg)),
+        };
+      }
+      return conv;
+    }));
+  };
+
+  const getLatestMessage = (conversationId: string): Message | null => {
+    const conversation = conversations.find(conv => conv.id === conversationId);
+    return conversation?.messages[conversation.messages.length - 1] || null;
   };
 
   const deleteConversation = (id: string) => {
-    setConversations(prevConversations => prevConversations.filter(conv => conv.id !== id));
+    setConversations(prev => prev.filter(conv => conv.id !== id));
     if (selectedConversation === id) {
       setSelectedConversation(null);
     }
   };
 
   const createNewConversation = (): string => {
-    const newConversationId = Date.now().toString();
-    setConversations(prevConversations => [
-      ...prevConversations,
-      { id: newConversationId, messages: [] }
-    ]);
-    setSelectedConversation(newConversationId);
-    return newConversationId;
+    const newId = Date.now().toString();
+    setConversations(prev => [...prev, { id: newId, messages: [] }]);
+    setSelectedConversation(newId);
+    return newId;
   };
 
-  const getCurrentConversation = (): Message[] => {
-    return conversations.find(conv => conv.id === selectedConversation)?.messages || [];
-  };
-
-  const getConversation = useCallback((id: string): Message[] => {
+  const getConversation = (id: string): Message[] => {
     return conversations.find(conv => conv.id === id)?.messages || [];
-  }, [conversations]);
+  };
 
   return {
     conversations,
     selectedConversation,
     setSelectedConversation,
     addMessageToConversation,
-    updateLastMessage,
     deleteConversation,
     isSidebarExpanded,
     setIsSidebarExpanded,
     createNewConversation,
-    getCurrentConversation,
-    getConversation,  // Add this new function to the returned object
+    getConversation,
+    updateMessageInConversation,
+    getLatestMessage,
   };
 }

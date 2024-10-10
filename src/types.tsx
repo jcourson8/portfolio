@@ -3,6 +3,7 @@ export interface Message {
     text: string
     user_id: string
     timestamp: number
+    pending?: boolean;
   }
   
  export interface Conversation {

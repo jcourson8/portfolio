@@ -122,15 +122,15 @@
   }
   .dark {
 
-    /* --background: 240 10% 3.9%; */
+    --background: 240 10% 3.9%;
     /* --background: 216 25% 11%; */
-    --background: 0 0% 12.2%;
+    /* --background: 0 0% 12.2%; */
 
     --foreground: 0 0% 98%;
 
     --card: 240 10% 3.9%;
 
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 0 0% 94%;
 
     --popover: 240 10% 3.9%;
 
@@ -170,7 +170,12 @@
 
     --chart-4: 280 65% 60%;
 
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
+
+    --text-primary: 223 0% 50%;
+
+    --text-secondary: 223 0% 37%;
+    
   }
 }
 

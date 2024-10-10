@@ -1,7 +1,7 @@
-import React from 'react'
-import './globals.css';
+import React, { Suspense } from 'react'
+import './globals.css'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { ConversationProvider } from '@/context/ConversationContext';
+import { ConversationProvider } from '@/context/ConversationContext'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -15,9 +15,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className={`font-sans ${inter.className}`}>
-        <ConversationProvider>{children}</ConversationProvider>
+        <ConversationProvider>
+          <Suspense fallback={<div className='dark'>Loading...</div>}>{children}</Suspense>
+        </ConversationProvider>
       </body>
     </html>
   )

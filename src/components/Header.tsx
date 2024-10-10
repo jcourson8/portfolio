@@ -5,9 +5,16 @@ import { LinkedInIcon } from './icons/LinkedInIcon'
 
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
+// <div className="sticky top-0 flex items-center justify-between py-5 px-8 border-b border-border bg-background backdrop-blur bg-opacity-10">
   return (
-    <div className="sticky top-0 bg-neutral-900 flex items-center justify-between py-5 px-8">
+    
+    <header 
+        className="sticky top-0 flex items-center justify-between py-5 px-8 border-b border-border"
+        style={{
+          backdropFilter: `blur(${Math.min(scrollY / 10, 10)}px)`,
+          backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollY / 200, 0.5)})`,
+        }}
+      >
       <a href="/" className="text-primary my-auto relative group">
         <h1 className="text-lg font-bold">James Courson</h1>
       </a>
@@ -22,25 +29,7 @@ const Header: React.FC = () => {
         />
         <GithubIcon githubUrl="https://github.com/jcourson8" altText="GitHub" minimal />
       </div>
-      {/* <div className="relative">
-        <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="bg-neutral-700 text-white px-4 py-2 rounded-md w-48 focus:outline-none focus:ring ring-neutral-500"
-        >
-          Select Repo
-        </button>
-        {isDropdownOpen && (
-          <div className="absolute right-0 mt-1 w-48 bg-neutral-900 shadow-lg rounded-md z-50">
-            <ul className="text-neutral-400">
-              <li className="p-2 hover:bg-neutral-800 cursor-pointer">Repo 1</li>
-              <li className="p-2 hover:bg-neutral-800 cursor-pointer">Repo 2</li>
-              <li className="p-2 hover:bg-neutral-800 cursor-pointer">Repo 3</li>
-              <li className="p-2 hover:bg-neutral-800 cursor-pointer">More...</li>
-            </ul>
-          </div>
-        )}
-      </div> */}
-    </div>
+    </header>
   )
 }
 

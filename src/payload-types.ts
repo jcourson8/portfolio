@@ -87,6 +87,7 @@ export interface Media {
  */
 export interface Project {
   id: number;
+  slug: string;
   title: string;
   description: string;
   projectUrl?: string | null;
@@ -98,6 +99,22 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  content_html?: string | null;
   featured?: boolean | null;
   completionDate?: string | null;
   updatedAt: string;

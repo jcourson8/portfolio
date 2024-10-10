@@ -95,6 +95,7 @@ module.exports = {
           400: '#60A5FA',
           600: '#2563EB',
         },
+        text: 'hsl(var(--text))',
       },
       fontFamily: {
         sans: ["Inter", "var(--font-inter)", ...fontFamily.sans],
