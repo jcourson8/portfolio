@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import './globals.css'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { ConversationProvider } from '@/context/ConversationContext'
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className={`font-sans ${inter.className} flex flex-col min-h-screen`}>
         {children}
+        <Analytics />
       </body>
     </html>
   )
