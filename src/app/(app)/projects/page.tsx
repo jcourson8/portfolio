@@ -1,24 +1,40 @@
+import type { Metadata } from 'next/types'
+import { getPayloadHMR } from '@payloadcms/next/utilities'
+import configPromise from '@payload-config'
 import React from 'react'
-import Link from 'next/link'
-import { getProjects } from '@/actions/getProjects'
+import ProjectCard, { ProjectCardSkeleton } from '@/components/ProjectCard'
+import type { Project } from '@/payload-types'
+
+export const dynamic = 'force-static'
+export const revalidate = 600
 
 export default async function ProjectsPage() {
-  const projects = await getProjects()
+  const payload = await getPayloadHMR({ config: configPromise })
+
+  const projects = await payload.find({
+    collection: 'projects',
+    depth: 1,
+    limit: 12,
+    overrideAccess: false,
+  })
 
   return (
-    <div className="dark container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <Link href={`/projects/${project.id}`} key={project.id}>
-            <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-              <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
-              <p className="text-gray-600 mb-4">{project.description}</p>
-              <span className="text-blue-500 hover:underline">View Project</span>
-            </div>
-          </Link>
-        ))}
+    <div className="pt-24 pb-24">
+      <div className="container">
+        <h1 className="text-4xl font-bold mb-8">Projects</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {projects.docs.map((project: Project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
       </div>
     </div>
   )
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    title: 'Projects',
+    description: 'View our latest projects',
+  }
 }

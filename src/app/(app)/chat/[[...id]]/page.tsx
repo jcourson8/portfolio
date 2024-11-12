@@ -11,8 +11,9 @@ import LandingIntro from '@/components/LandingIntro'
 import { Message } from '@/types'
 import { readDataStream } from 'ai'
 import { useConversationContext } from '@/context/ConversationContext';
-
-export default function RootPage() {
+import { v4 as uuidv4} from 'uuid';
+  
+export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id ? params.id[0] : undefined;
@@ -34,6 +35,7 @@ export default function RootPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const lastProcessedMessageIdRef = useRef<string | null>(null);
+  const [controller, setController] = useState<AbortController | null>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -41,7 +43,7 @@ export default function RootPage() {
     if (savedSidebarState !== null) {
       setIsSidebarExpanded(JSON.parse(savedSidebarState));
     }
-  }, []);
+  }, [setIsSidebarExpanded]);
 
   useEffect(() => {
     if (isClient) {
@@ -54,7 +56,7 @@ export default function RootPage() {
       const conversation = conversations.find(conv => conv.id === id);
       
       if (!conversation) {
-        router.replace('/');
+        router.replace('/chat');
         return;
       }
 
@@ -75,14 +77,13 @@ export default function RootPage() {
         processMessage(latestMessage.text, id, latestMessage.id);
       }
     } else {
-      console.log('no id');
       setMessages([]);
       setSelectedConversation(null);
     }
-  }, [id, conversations]);
+  }, [id, conversations, router]);
 
   const handleSendMessage = async (message: string) => {
-    const newMessageId = Date.now().toString();
+    const newMessageId = uuidv4();
     const newMessage: Message & { pending?: boolean } = {
       id: newMessageId,
       text: message,
@@ -95,7 +96,7 @@ export default function RootPage() {
     if (!currentId) {
       currentId = createNewConversation();
       addMessageToConversation(newMessage, currentId);
-      router.replace(`/${currentId}`);
+      router.replace(`/chat/${currentId}`);
       // Do not call processMessage here
     } else {
       addMessageToConversation(newMessage, currentId);
@@ -103,14 +104,25 @@ export default function RootPage() {
     }
   };  
 
+  const stopProcessing = () => {
+    if (controller) {
+      controller.abort();
+      setController(null);
+      setIsLoading(false);
+    }
+  };
+
   const processMessage = async (message: string, conversationId: string, messageId: string) => {
     setIsLoading(true);
+    const abortController = new AbortController();
+    setController(abortController);
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [...messages, { text: message, user_id: 'user' }], conversationId }),
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -145,10 +157,18 @@ export default function RootPage() {
         }
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      // Handle error (e.g., show error message to user)
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.log('Request aborted');
+        } else {
+          console.error('Error sending message:', error);
+        }
+      } else {
+        console.error('Unknown error:', error);
+      }
     } finally {
       setIsLoading(false);
+      setController(null);
     }
   };
 
@@ -164,7 +184,7 @@ export default function RootPage() {
           toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
           selectedConversation={id || null}
         />
-        <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-0'}`}>
+        <div className={`flex-1 flex flex-col transition-all duration-300`}>
           <Header />
           <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
             {id ? (
@@ -173,7 +193,11 @@ export default function RootPage() {
               <LandingIntro />
             )}
           </div>
-          <MessageInput sendMessage={handleSendMessage} isWaitingForResponse={isLoading} />
+          <MessageInput 
+            sendMessage={handleSendMessage} 
+            isWaitingForResponse={isLoading} 
+            onStop={stopProcessing} 
+          />
         </div>
       </div>
     </div>

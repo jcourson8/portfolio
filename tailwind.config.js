@@ -1,7 +1,7 @@
-/** @type {import('tailwindcss').Config} */
-const { fontFamily } = require("tailwindcss/defaultTheme")
+import defaultTheme from 'tailwindcss/defaultTheme'
 
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -9,7 +9,10 @@ module.exports = {
     './src/**/*.{ts,tsx}',
   ],
   darkMode: ['selector', '[data-theme="dark"]', 'class'],
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/typography')
+  ],
   prefix: '',
   safelist: [
     'lg:col-span-4',
@@ -96,10 +99,11 @@ module.exports = {
           600: '#2563EB',
         },
         text: 'hsl(var(--text))',
+        dark: 'hsl(var(--dark))',
       },
       fontFamily: {
-        sans: ["Inter", "var(--font-inter)", ...fontFamily.sans],
-        mono: ["JetBrains Mono", "var(--font-jetbrains-mono)", ...fontFamily.mono],
+        sans: ["Inter", "var(--font-inter)", ...defaultTheme.fontFamily.sans],
+        mono: ["JetBrains Mono", "var(--font-jetbrains-mono)", ...defaultTheme.fontFamily.mono],
       },
       keyframes: {
         'accordion-down': {

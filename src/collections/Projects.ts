@@ -55,16 +55,10 @@ export const Projects: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          // The HTMLConverter Feature is the feature which manages the HTML serializers.
-          // If you do not pass any arguments to it, it will use the default serializers.
-          HTMLConverterFeature({}),
-        ],
-      }),
+      editor: lexicalEditor(),
+      required: true,
     },
-    lexicalHTML('content', { name: 'content_html' }),
+    // lexicalHTML('content', { name: 'content_html' }),
     {
       name: 'featured',
       type: 'checkbox',

@@ -4,9 +4,10 @@ import { ArrowUp } from 'lucide-react'
 interface MessageInputProps {
   sendMessage: (message: string) => void
   isWaitingForResponse: boolean
+  onStop?: () => void
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ sendMessage, isWaitingForResponse }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ sendMessage, isWaitingForResponse, onStop }) => {
   const [message, setMessage] = useState('')
   const divRef = useRef<HTMLDivElement>(null)
 
@@ -40,6 +41,15 @@ const MessageInput: React.FC<MessageInputProps> = ({ sendMessage, isWaitingForRe
     }
   }, [])
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isWaitingForResponse) {
+      onStop?.()
+    } else {
+      handleSubmit(e)
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="mt-auto w-full px-4 pb-2">
       <div className="relative bg-background border border-border p-2 rounded-2xl w-full max-w-3xl mx-auto shadow-lg">
@@ -55,14 +65,14 @@ const MessageInput: React.FC<MessageInputProps> = ({ sendMessage, isWaitingForRe
         </div>
         <div className="absolute right-4 bottom-4">
           <button
-            type="submit"
-            disabled={isWaitingForResponse}
+            type="button"
+            onClick={handleButtonClick}
             className={`rounded-xl w-8 h-8 flex items-center justify-center border border-border transition duration-300 ${
               isWaitingForResponse ? 'bg-destructive hover:bg-destructive/90' : 'bg-background hover:border-primary'
             }`}
           >
             {isWaitingForResponse ? (
-              'Stop'
+              <div className="w-3 h-3 bg-white rounded-[1px]" />
             ) : (
               <ArrowUp className="w-6 h-6 text-primary-primary" />
             )}

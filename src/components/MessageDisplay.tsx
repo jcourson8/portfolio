@@ -14,7 +14,7 @@ const BotMessage: React.FC<{ message: Message; isCurrent: boolean }> = ({ messag
   }, [message.text, isCurrent])
 
   return (
-    <div className="w-full flex items-start space-x-2">
+    <div className="w-full flex items-start space-x-2 ">
       <div className="flex-shrink-0">
         <div className="rounded-full p-3 bg-primary mr-2"></div>
       </div>
@@ -74,12 +74,13 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages }) => {
   }, [messages, isAtBottom]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 relative h-full">
+    <div className="w-full  px-4 relative h-full">
       <div 
         ref={scrollContainerRef} 
-        className="space-y-4 overflow-y-auto h-full pb-16 first:pt-4"
+        className="overflow-y-auto h-full pb-16 pt-4"
         onScroll={handleScroll}
       >
+        <div className="max-w-3xl mx-auto space-y-4 ">
         {messages.map((message, index) =>
           message.user_id === 'bot' ? (
             <BotMessage
@@ -90,7 +91,8 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages }) => {
           ) : (
             <UserMessage key={message.id} message={message} />
           ),
-        )}
+          )}
+        </div>
       </div>
       {showScrollButton && (
         <button

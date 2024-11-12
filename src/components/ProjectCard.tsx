@@ -5,6 +5,25 @@ import { GithubIcon } from './icons/GithubIcon'
 import { ArrowUpperRightIcon } from './icons/ArrowUpperRightIcon'
 import { ExternalLinkIcon } from './icons/ExternalLinkIcon'
 
+export const ProjectCardSkeleton = () => {
+  return (
+    <div className="border border-border py-4 px-5 rounded-lg shadow-lg h-full flex flex-col">
+      <div className="flex justify-between items-start mb-2">
+        <div className="h-7 bg-primary/10 rounded w-2/3 animate-pulse" />
+        <div className="w-4 h-4 bg-primary/10 rounded animate-pulse" />
+      </div>
+      <div className="flex-grow space-y-2 mt-3">
+        <div className="h-4 bg-primary/10 rounded w-full animate-pulse" />
+        <div className="h-4 bg-primary/10 rounded w-3/4 animate-pulse" />
+      </div>
+      <div className="flex gap-2 mt-3">
+        <div className="h-6 bg-primary/10 rounded-full w-16 animate-pulse" />
+        <div className="h-6 bg-primary/10 rounded-full w-16 animate-pulse" />
+      </div>
+    </div>
+  )
+}
+
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
     <Link href={`/projects/${project.slug}`}>

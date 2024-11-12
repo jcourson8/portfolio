@@ -122,9 +122,11 @@
   }
   .dark {
 
-    --background: 240 10% 3.9%;
+    /* --background: 240 10% 3.9%; */
+    --background: 0 0% 7.8%;
     /* --background: 216 25% 11%; */
     /* --background: 0 0% 12.2%; */
+    --dark: 240 10% 3.9%;
 
     --foreground: 0 0% 98%;
 
@@ -144,7 +146,7 @@
 
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
+    --muted: 220 3.7% 30.9%;
 
     --muted-foreground: 240 5% 64.9%;
 
@@ -152,7 +154,7 @@
 
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 50%;
 
     --destructive-foreground: 0 0% 98%;
 

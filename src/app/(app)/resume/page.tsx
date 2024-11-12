@@ -48,7 +48,7 @@ const ResumePage: React.FC = () => {
           <h3 className="text-xl font-semibold">Projects</h3>
           <ul className="list-disc pl-5">
             <li><strong>Conversational Codebase</strong> (2024). A current project, written in Python, aimed at developing a conversational AI tool to simplify interactions with codebases. It employs semantic search, utilizing OpenAI generative AI models, for context-aware explanations. The project utilizes cutting edge concepts such as dependency resolutions within knowledge graphs, LLM validation with citation, and Retrieval Augmented Generation (RAG).</li>
-            <li><strong>Novel CAN Intrusion Detection System</strong> (2023). Developed an advanced intrusion detection system for in-vehicle Controller Area Networks, focusing on time-based features and Long Short-Term Memory (LSTM) networks. This approach emphasizes the timing and frequency of packet transmissions and leveraged LSTM's ability to remember and analyze temporal data patterns enhancing the security against complex cyberthreats in modern vehicle communication networks.</li>
+            <li><strong>Novel CAN Intrusion Detection System</strong> (2023). Developed an advanced intrusion detection system for in-vehicle Controller Area Networks, focusing on time-based features and Long Short-Term Memory (LSTM) networks. This approach emphasizes the timing and frequency of packet transmissions and leveraged LSTM&apos;s ability to remember and analyze temporal data patterns enhancing the security against complex cyberthreats in modern vehicle communication networks.</li>
             {/* Add other projects here */}
           </ul>
         </div>

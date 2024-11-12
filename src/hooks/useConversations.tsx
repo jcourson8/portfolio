@@ -1,19 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Conversation, Message } from '@/types';
+import { v4 as uuidv4} from 'uuid';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load conversations from localStorage on mount
   useEffect(() => {
-    const storedConversations = localStorage.getItem('conversations');
-    if (storedConversations) {
-      const parsedConversations = JSON.parse(storedConversations);
-      setConversations(parsedConversations);
-      setIsSidebarExpanded(parsedConversations.length > 0);
-    }
+    const loadConversations = async () => {
+      setIsLoading(true);
+      try {
+        const storedConversations = localStorage.getItem('conversations');
+        if (storedConversations) {
+          const parsedConversations = JSON.parse(storedConversations);
+          setConversations(parsedConversations);
+          setIsSidebarExpanded(parsedConversations.length > 0);
+        }
+      } catch (error) {
+        console.error('Error loading conversations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadConversations();
   }, []);
 
   // Save conversations to localStorage when they change
@@ -32,7 +45,7 @@ export function useConversations() {
       return updated;
     });
     setSelectedConversation(conversationId);
-    setIsSidebarExpanded(true);
+    // setIsSidebarExpanded(true);
   };
 
   const updateMessageInConversation = (conversationId: string, messageId: string, updates: Partial<Message>) => {
@@ -60,9 +73,12 @@ export function useConversations() {
   };
 
   const createNewConversation = (): string => {
-    const newId = Date.now().toString();
+    const newId = uuidv4();
     setConversations(prev => [...prev, { id: newId, messages: [] }]);
     setSelectedConversation(newId);
+    if (window.innerWidth > 768) {
+      setIsSidebarExpanded(true);
+    }
     return newId;
   };
 
@@ -82,5 +98,6 @@ export function useConversations() {
     getConversation,
     updateMessageInConversation,
     getLatestMessage,
+    isLoading,
   };
 }

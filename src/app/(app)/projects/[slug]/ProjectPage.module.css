@@ -1,0 +1,40 @@
+.styledContent {
+  scroll-behavior: smooth;
+}
+
+/* 
+
+.styledContent {
+  counter-reset: section;
+}
+
+.styledContent h3 {
+  counter-increment: section;
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.styledContent h3::before {
+  content: counter(section);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  color: #4b5563;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.styledContent h3 + p {
+  margin-top: 0.5rem;
+} */
+
+/* Add more styles as needed for other elements within the content */

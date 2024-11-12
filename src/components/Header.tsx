@@ -9,15 +9,12 @@ const Header: React.FC = () => {
   return (
     
     <header 
-        className="sticky top-0 flex items-center justify-between py-5 px-8 border-b border-border"
-        style={{
-          backdropFilter: `blur(${Math.min(scrollY / 10, 10)}px)`,
-          backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollY / 200, 0.5)})`,
-        }}
+        className="sticky top-0 n py-4 px-8 border-b border-border"
       >
-      <a href="/" className="text-primary my-auto relative group">
+      <div className="container flex items-center justify-between">
+      <Link href="/" className="text-primary my-auto relative group">
         <h1 className="text-lg font-bold">James Courson</h1>
-      </a>
+      </Link>
       <div className="flex space-x-4 items-center">
         <Link href="/resume" className="text-primary my-auto relative group">
           <span className="hover-underline-animation">Resume</span>
@@ -28,6 +25,7 @@ const Header: React.FC = () => {
           minimal
         />
         <GithubIcon githubUrl="https://github.com/jcourson8" altText="GitHub" minimal />
+        </div>
       </div>
     </header>
   )

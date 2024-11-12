@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react'
-import ProjectCard from './ProjectCard'
+import ProjectCard, { ProjectCardSkeleton } from './ProjectCard'
 import { Project } from '@/payload-types'
 import { getProjects } from '@/actions/getProjects';
+import Link from 'next/link';
 
 const attributes = ['a developer.', 'a pole vaulter.', 'a designer.', 'an AI enthusiast.'];
 
 const LandingIntro: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async (): Promise<void> => {
@@ -17,6 +19,8 @@ const LandingIntro: React.FC = () => {
         setProjects(projectsData)
       } catch (error) {
         console.error('Error fetching projects:', error)
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -27,17 +31,26 @@ const LandingIntro: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto p-8 pt-0 ">
       {/* <h1 className="text-xl font-semibold mb-2">James Courson</h1> */}
       <p className="text-3xl md:text-5xl mb-8 font-bold pb-10 pt-14">
-        I'm <TypingEffect />
+        I&apos;m <TypingEffect />
       </p>
       <div className="px-6">
-      <h3 className="text-md mb-4 pl-4">Featured Projects:</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-
-        {/* Add project cards here get top 4 */}
-        {projects.slice(0, 4).map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+        <div className="flex justify-between items-center mb-4 pl-4">
+          <h3 className="text-md">Featured Projects:</h3>
+          <Link 
+            href="/projects" 
+            className="text-sm hover:underline text-muted"
+          >
+            View All Projects →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {isLoading 
+            ? [...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)
+            : projects.slice(0, 4).map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))
+          }
+        </div>
       </div>
     </div>
   )
