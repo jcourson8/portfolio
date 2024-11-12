@@ -53,7 +53,11 @@ export default async function ProjectPage(props: Props) {
     <div className={`container max-w-4xl mx-auto py-12 flex ${styles.styledContent}`}>
       <aside className="w-64 flex-shrink-0 hidden lg:block">
         <div className="sticky top-24 space-y-6">
-          <Link href="/" prefetch={true} className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary">
+          <Link 
+            href="/chat" 
+            prefetch={false}
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
+          >
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back to Home
           </Link>
