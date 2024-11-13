@@ -18,7 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className={`font-sans ${inter.className} flex flex-col min-h-screen`}>
-        {children}
+        <ConversationProvider>
+          {children}
+        </ConversationProvider>
         <Analytics />
       </body>
     </html>
