@@ -14,6 +14,7 @@ html.transitioning {
 
 @layer base {
   :root {
+    --safe-area-bg: 0 0% 100%;
 
     --background: 0 0% 100%;
 
@@ -66,6 +67,7 @@ html.transitioning {
     --radius: 0.5rem
   }
   .dark {
+    --safe-area-bg: 0 0% 7.8%;
 
     /* --background: 240 10% 3.9%; */
     --background: 0 0% 7.8%;
@@ -175,6 +177,24 @@ html.transitioning {
       opacity: 1;
       filter: blur(0);
     }
+  }
+
+  @supports (padding-top: env(safe-area-inset-top)) {
+    body {
+      background-color: hsl(var(--safe-area-bg));
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  html {
+    background-color: hsl(var(--safe-area-bg));
+    height: -webkit-fill-available;
+  }
+
+  html.transitioning,
+  html.transitioning body {
+    transition: background-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

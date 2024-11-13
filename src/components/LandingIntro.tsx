@@ -28,23 +28,23 @@ const LandingIntro: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-8 pt-24">
-      <p className="text-4xl font-normal tracking-tight text-foreground mb-16">
+    <div className="w-full max-w-4xl mx-auto px-6 py-4 sm:p-8 pt-12 sm:pt-24">
+      <p className="text-3xl sm:text-4xl font-normal tracking-tight text-foreground mb-8 sm:mb-16">
         I&apos;m <TypingEffect />
       </p>
       
-      <div className="space-y-12">
+      <div className="space-y-6 sm:space-y-12">
         <div className="flex justify-between items-baseline border-b border-border pb-2">
-          <h2 className="text-xl font-normal tracking-tight text-foreground">Featured Projects</h2>
+          <h2 className="text-lg sm:text-xl font-normal tracking-tight text-foreground">Featured Projects</h2>
           <Link 
             href="/projects" 
-            className="text-sm font-light text-muted hover:text-foreground transition-colors"
+            className="text-xs sm:text-sm font-light text-muted hover:text-foreground transition-colors"
           >
             View All →
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {isLoading 
             ? [...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)
             : projects.slice(0, 4).map((project) => (

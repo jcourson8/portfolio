@@ -193,11 +193,13 @@ export default function ChatPage() {
               <LandingIntro />
             )}
           </div>
-          <MessageInput 
-            sendMessage={handleSendMessage} 
-            isWaitingForResponse={isLoading} 
-            onStop={stopProcessing} 
-          />
+          <div className="pb-safe">
+            <MessageInput 
+              sendMessage={handleSendMessage} 
+              isWaitingForResponse={isLoading} 
+              onStop={stopProcessing} 
+            />
+          </div>
         </div>
       </div>
     </div>

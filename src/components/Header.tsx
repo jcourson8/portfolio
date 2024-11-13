@@ -5,9 +5,9 @@ import { LinkedInIcon } from './icons/LinkedInIcon'
 
 const Header: React.FC = () => {
   return (
-    <header className="sticky top-0 py-4 px-8 border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="container flex items-center justify-between max-w-4xl mx-auto">
-        <Link href="/" className="group">
+    <header className="sticky top-0 z-30S bg-background border-b border-border py-2">
+      <div className="container flex flex-col sm:flex-row items-center justify-between max-w-4xl mx-auto">
+        <Link href="/" className="group ">
           <h1 className="text-lg font-normal tracking-tight text-foreground">James Courson</h1>
         </Link>
         <nav className="flex items-center space-x-6">
