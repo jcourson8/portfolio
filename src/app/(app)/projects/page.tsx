@@ -1,40 +1,64 @@
-import type { Metadata } from 'next/types'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
-import configPromise from '@payload-config'
-import React from 'react'
-import ProjectCard, { ProjectCardSkeleton } from '@/components/ProjectCard'
-import type { Project } from '@/payload-types'
+'use client';
 
-export const dynamic = 'force-static'
-export const revalidate = 600
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Project } from '@/payload-types';
+import { getProjects } from '@/actions/getProjects';
+import ProjectCard, { ProjectCardSkeleton } from '@/components/ProjectCard';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 
-export default async function ProjectsPage() {
-  const payload = await getPayloadHMR({ config: configPromise })
+const ProjectsPage: React.FC = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const projects = await payload.find({
-    collection: 'projects',
-    depth: 1,
-    limit: 12,
-    overrideAccess: false,
-  })
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projectsData = await getProjects();
+        setProjects(projectsData);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   return (
-    <div className="pt-24 pb-24">
-      <div className="container">
-        <h1 className="text-4xl font-bold mb-8">Projects</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.docs.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="container max-w-4xl p-8 leading-tight"
+    >
+      <Link 
+        href="/chat" 
+        prefetch={false}
+        className="inline-flex items-center gap-3 text-sm font-light text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        <span className="tracking-wide">Back to Home</span>
+      </Link>
 
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Projects',
-    description: 'View our latest projects',
-  }
-}
+      <div className="mb-12">
+        <h1 className="text-4xl font-normal tracking-tight mb-4 text-foreground">Projects</h1>
+        <p className="text-sm font-light text-muted-foreground">
+          A collection of my recent work and experiments.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {isLoading 
+          ? [...Array(6)].map((_, i) => <ProjectCardSkeleton key={i} />)
+          : projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))
+        }
+      </div>
+    </motion.div>
+  );
+};
+
+export default ProjectsPage;

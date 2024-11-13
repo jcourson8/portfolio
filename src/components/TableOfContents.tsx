@@ -1,66 +1,82 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
+import { cn } from '@/lib/utils';
 
-export type TOCItem = {
-  id: string
-  text: string
-  level: number
+export interface TOCItem {
+  id: string;
+  text: string;
+  level: number;
 }
 
-type Props = {
-  items: TOCItem[]
+interface TableOfContentsProps {
+  items: TOCItem[];
 }
 
-export default function TableOfContents({ items }: Props) {
-  const [activeSection, setActiveSection] = useState('')
+export default function TableOfContents({ items }: TableOfContentsProps) {
+  const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100 // Add offset for better UX
-
-      // Find the last section that has been scrolled past
-      const active = items
-        .slice()
-        .reverse()
-        .find(item => {
-          const element = document.getElementById(item.id)
-          if (element) {
-            return scrollPosition >= element.offsetTop
+    const observers = new Map();
+    
+    // Setup observers for each heading
+    items.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                setActiveId(id);
+              }
+            });
+          },
+          {
+            rootMargin: '-20% 0% -35% 0%',
+            threshold: 1.0,
           }
-          return false
-        })
-
-      if (active && active.id !== activeSection) {
-        setActiveSection(active.id)
+        );
+        
+        observer.observe(element);
+        observers.set(id, observer);
       }
-    }
+    });
 
-    window.addEventListener('scroll', handleScroll)
-    handleScroll() // Call once to set initial active section
-
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [items, activeSection])
+    // Cleanup
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [items]);
 
   return (
-    <nav className="space-y-1 max-w-[200px]">
+    <nav className="space-y-1 text-sm">
+      <p className="text-sm font-medium tracking-wider text-muted-foreground mb-4 uppercase">
+        On this page
+      </p>
       {items.map((item) => (
         <a
           key={item.id}
           href={`#${item.id}`}
-          className={`block py-1 text-sm transition-colors break-words ${
-            activeSection === item.id
-              ? 'text-primary font-medium'
-              : 'text-muted-foreground hover:text-primary'
-          }`}
-          style={{
-            marginLeft: `${(item.level - 2) * 12}px`,
-            paddingRight: '8px',
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById(item.id)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
           }}
+          className={cn(
+            'block py-1 text-sm transition-colors duration-200',
+            'hover:text-foreground',
+            item.level === 2 && 'pl-4',
+            activeId === item.id
+              ? 'text-foreground font-medium'
+              : 'text-muted-foreground font-light',
+          )}
         >
           {item.text}
         </a>
       ))}
     </nav>
-  )
+  );
 }

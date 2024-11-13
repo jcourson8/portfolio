@@ -1,69 +1,332 @@
-import React from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FaGithub, FaEnvelope } from 'react-icons/fa';
+import { useTheme } from '@/hooks/useTheme';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+const projects = [
+  {
+    title: "Conversational Codebase",
+    year: "2024",
+    description: "Developed a Python-based conversational AI tool for simplified codebase interaction, utilizing semantic search and OpenAI models. Implemented advanced features including knowledge graph dependency resolution, LLM validation with citation, and Retrieval Augmented Generation (RAG).",
+    githubUrl: "https://github.com/jcourson8/conversational-codebase",
+    projectUrl: null,
+    technologies: ["Python", "OpenAI", "RAG", "LangChain"]
+  },
+  {
+    title: "Doxi CLI Documentation Tool",
+    year: "2024",
+    description: "Built a CLI tool leveraging Jina AI's reader API to convert web documentation into LLM-friendly formats, optimizing content organization for enhanced AI model comprehension and response accuracy.",
+    githubUrl: "https://github.com/jcourson8/doxi",
+    projectUrl: null,
+    technologies: ["Python", "Jina AI"]
+  },
+  {
+    title: "CodeSelect",
+    year: "2024",
+    description: "Created a browser-based tool using SolidJS and Tailwind CSS that streamlines code sharing with AI language models. Implemented client-side project structure processing using File System Access API, serving 100+ active users on Vercel.",
+    githubUrl: "https://github.com/jcourson8/codeselect",
+    projectUrl: null,
+    technologies: ["SolidJS", "Tailwind CSS"]
+  },
+  {
+    title: "Real ORNL CAN Dataset Dataloader",
+    year: "2023",
+    description: "Developed a customizable dataloader handling 26 million CAN packets, featuring configurable batch sizes and flexible feature processing options.",
+    githubUrl: "https://github.com/jcourson8/ornl-can-dataloader",
+    projectUrl: null,
+    technologies: ["Python"]
+  },
+  {
+    title: "Full-Stack Rust-Leptos Web Application",
+    year: "2023",
+    description: "Built a full-stack web application using Rust and Leptos, compiled to WebAssembly. Implemented comprehensive user authentication including signup, login, and secure session management.",
+    githubUrl: "https://github.com/jcourson8/rust-leptos-web-application",
+    projectUrl: null,
+    technologies: ["Rust", "Leptos"]
+  },
+  {
+    title: "Openstack Cloud Deployment",
+    year: "2023",
+    description: "Led team deployment of virtualized servers managed by Ceph, using Kolla-Ansible for OpenStack configuration, creating a scalable cloud infrastructure.",
+    githubUrl: "https://github.com/jcourson8/openstack-cloud-deployment",
+    projectUrl: null,
+    technologies: ["OpenStack", "Ceph"]
+  }
+];
 
 const ResumePage: React.FC = () => {
+  useTheme('light');
+  const [selectedTech, setSelectedTech] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('.tech-tag')) {
+        setSelectedTech(null);
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
+
   return (
-    <div className="max-w-4xl mx-auto p-8 leading-tight">
-      <header className="text-center mb-4">
-        <h1 className="text-3xl font-bold">James B. Courson</h1>
-        <span>
-            <a href={`mailto:jcourson@proton.me`}>jcourson@proton.me |</a>
-            <a href="https://github.com/jcourson8"> github.com/jcourson8</a> | U.S. Citizen
-        </span>
-      </header>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="max-w-3xl mx-auto p-4 sm:p-8 leading-tight overflow-x-hidden"
+    >
+      <Link 
+        href="/chat" 
+        prefetch={false}
+        className="inline-flex items-center gap-3 text-sm font-light text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        <span className="tracking-wide">Back to Home</span>
+      </Link>
 
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold mb-2">Education</h2>
-        <hr className="border-t-2 border-primary my-2"/>
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold">Auburn University, Auburn, AL</h3>
-          <p className="italic">Fall 2018 - Spring 2024</p>
-          <ul className="list-disc pl-5">
-            <li><strong>M.S.E. in Cybersecurity Engineering</strong>, May 2024. GPA: 3.90</li>
-            <li><strong>B.S.E. in Computer Science with Concentration in Mathematics</strong>, May 2022. GPA: 3.55</li>
-            <li><strong>Graduate Coursework:</strong> Cloud Computing; Artificial Intelligence; Evolutionary Computing; Cybersecurity Threats and Countermeasures; Digital Forensics; Advanced Operating Systems; Software Reverse Engineering; Advanced Computer and Network Security</li>
-            <li><strong>Undergraduate Coursework:</strong> Algorithms; Machine Learning; Cryptography, Data Compression; Operating Systems; Computer Networks; Graph Theory.</li>
-          </ul>
+      {/* Header */}
+      <motion.header className="mb-12">
+        <h1 className="text-4xl font-normal tracking-tight mb-4 text-foreground break-words">James B. Courson</h1>
+        <div className="flex flex-wrap gap-4 items-center text-sm font-light">
+          <a href="mailto:jcourson@proton.me" className="text-foreground hover:text-muted transition-colors">
+            <span className="flex items-center gap-2">
+              <FaEnvelope className="w-3 h-3" /> jcourson@proton.me
+            </span>
+          </a>
+          <span className="text-muted hidden sm:inline">|</span>
+          <a href="https://github.com/jcourson8" className="text-foreground hover:text-muted transition-colors">
+            <span className="flex items-center gap-2">
+              <FaGithub className="w-3 h-3" /> github.com/jcourson8
+            </span>
+          </a>
+          <span className="text-muted hidden sm:inline">|</span>
+          <span className="text-foreground">U.S. Citizen</span>
         </div>
-      </section>
+      </motion.header>
 
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold mb-2">Employment</h2>
-        <hr className="border-t-2 border-primary my-2"/>
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold">Software Engineer, Military REACH Program</h3>
-          <p className="italic">Fall 2023 - Current</p>
-          <ul className="list-disc pl-5">
-            <li><strong>Semantic Search Integration:</strong> Spearheaded the integration of AI-driven search by designing a system that leverages OpenAI embeddings in conjunction with keyword search, significantly enhancing retrieval capabilities of over 8000 documents on our production website.</li>
-            <li><strong>Streamlined Content Management:</strong> Initiated and oversaw the transition to Markdown for content representation, employing Python to automate the migration of 154 static web pages to our new React/TypeScript based website. This overhaul streamlined content management and accelerated the deployment of business requirements.</li>
-            <li><strong>Innovated Content Delivery System:</strong> Proposed and delivered a new content delivery system for monthly newsletters that minimized manual coordination between the development team and content authors, enhanced operational efficiency and responsiveness to business needs.</li>
-          </ul>
+      {/* Education Section */}
+      <motion.section className="mb-12">
+        <h2 className="text-2xl font-normal tracking-tight mb-6 text-foreground">Education</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="col-span-12 mb-4">
+            <div className="flex justify-between items-baseline border-b border-border pb-2">
+              <h3 className="text-xl font-normal tracking-tight text-foreground">Auburn University</h3>
+              <span className="text-sm font-light text-muted">2018—2024</span>
+            </div>
+          </div>
+
+          {/* Graduate & Undergraduate sections - similar pattern */}
+          <div className="col-span-12 lg:col-span-6 space-y-4">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-muted mb-1">Graduate Degree</p>
+              <h4 className="font-normal mb-1 text-foreground">M.S.E. Cybersecurity Engineering</h4>
+              <p className="text-sm font-light text-muted-foreground">GPA 3.90 · May 2024</p>
+            </div>
+            
+            <div>
+              <p className="text-xs uppercase tracking-wider text-muted mb-2">Coursework</p>
+              <div className="grid grid-cols-2 gap-1 text-sm">
+                {[
+                  "Cloud Computing",
+                  "Artificial Intelligence",
+                  "Evolutionary Computing",
+                  "Cybersecurity Threats",
+                  "Digital Forensics",
+                  "Advanced OS",
+                  "Network Security",
+                  "Reverse Engineering"
+                ].map((course) => (
+                  <span key={course} className="font-light">
+                    {course}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Undergraduate Degree */}
+          <div className="col-span-12 lg:col-span-6 space-y-4">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Undergraduate Degree</p>
+              <h4 className="font-normal mb-1">B.S.E. Computer Science</h4>
+              <p className="text-sm font-light text-muted-foreground">Mathematics Concentration · GPA 3.55 · May 2022</p>
+            </div>
+            
+            <div>
+              <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Coursework</p>
+              <div className="grid grid-cols-2 gap-1 text-sm">
+                {[
+                  "Algorithms",
+                  "Machine Learning",
+                  "Cryptography",
+                  "Data Compression",
+                  "Operating Systems",
+                  "Computer Networks",
+                  "Graph Theory"
+                ].map((course) => (
+                  <span key={course} className="font-light">
+                    {course}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        {/* Add other employment sections here */}
-      </section>
+      </motion.section>
 
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold mb-2">Technical Experience</h2>
-        <hr className="border-t-2 border-primary my-2"/>
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold">Projects</h3>
-          <ul className="list-disc pl-5">
-            <li><strong>Conversational Codebase</strong> (2024). A current project, written in Python, aimed at developing a conversational AI tool to simplify interactions with codebases. It employs semantic search, utilizing OpenAI generative AI models, for context-aware explanations. The project utilizes cutting edge concepts such as dependency resolutions within knowledge graphs, LLM validation with citation, and Retrieval Augmented Generation (RAG).</li>
-            <li><strong>Novel CAN Intrusion Detection System</strong> (2023). Developed an advanced intrusion detection system for in-vehicle Controller Area Networks, focusing on time-based features and Long Short-Term Memory (LSTM) networks. This approach emphasizes the timing and frequency of packet transmissions and leveraged LSTM&apos;s ability to remember and analyze temporal data patterns enhancing the security against complex cyberthreats in modern vehicle communication networks.</li>
-            {/* Add other projects here */}
-          </ul>
+      {/* Employment Section */}
+      <motion.section className="mb-12">
+        <h2 className="text-2xl font-normal tracking-tight mb-6">Employment</h2>
+        
+        {/* Software Engineer at Military REACH */}
+        <div className="border-b border-neutral-200 pb-2 mb-6">
+          <div className="flex justify-between items-baseline">
+            <div>
+              <h3 className="text-xl font-normal tracking-tight">Software Engineer</h3>
+              <p className="text-sm font-light text-neutral-500">Military REACH Program</p>
+            </div>
+            <span className="text-sm font-light text-muted">2023—Present</span>
+          </div>
         </div>
-      </section>
 
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold mb-2">Additional</h2>
-        <hr className="border-t-2 border-primary my-2"/>
-        <ul className="list-disc pl-5">
-          <li><strong>Languages:</strong> <em>Proficient:</em> Python; <em>Intermediate:</em> TypeScript; Java; <em>Competent:</em> C; Rust</li>
-          <li><strong>Technologies:</strong> OpenAI API; PyTorch; Flask; LangChain; NextJS; Leptos; Git; Linux; IDA; Docker; Ansible; Openstack; Ceph; Kubernetes</li>
-          <li><strong>Other:</strong> CyberCorps SFS Recipient</li>
-        </ul>
-      </section>
-    </div>
+        <div className="space-y-6 mb-12">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Framework Modernization</p>
+            <p className="text-sm font-light">Led the migration to Next.js App Router architecture, implementing TanStack Query for efficient search result caching and improved application performance.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">AI-Enhanced Search</p>
+            <p className="text-sm font-light">Developed an AI-powered search tool using OpenAI embeddings, improving retrieval efficiency across 10,000+ documents.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Content Management</p>
+            <p className="text-sm font-light">Automated migration of static content to Markdown format, streamlining content management and deployment cycles.</p>
+          </div>
+        </div>
+
+        {/* Research & Teaching Positions */}
+        <div className="border-b border-neutral-200 pb-2 mb-6">
+          <div className="flex justify-between items-baseline">
+            <div>
+              <h3 className="text-xl font-normal tracking-tight">Graduate Research & Teaching Assistant</h3>
+              <p className="text-sm font-light text-neutral-500">Auburn University</p>
+            </div>
+            <span className="text-sm font-light text-muted">2022—Present</span>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Research</p>
+            <p className="text-sm font-light">Deployed an IDS for Controller Area Networks achieving 0.99 F1 Score. Created novel 3D attack pattern visualizations and assisted in vulnerability assessments for bus manufacturers.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Teaching</p>
+            <p className="text-sm font-light">Managed coursework and grading for Software Construction, Software Engineering, and Software Modeling courses. Developed automation tools to streamline grading processes.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Course Support</p>
+            <p className="text-sm font-light">Facilitated labs, provided programming support, and ensured student comprehension of core concepts across multiple courses focusing on C++, Python, and Java.</p>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Technical Experience Section */}
+      <motion.section className="mb-12">
+        <h2 className="text-2xl font-normal tracking-tight mb-6">Technical Experience</h2>
+        
+        <div className="grid grid-cols-12 gap-6">
+          {projects.map((project, index) => (
+            <motion.div 
+              key={index} 
+              className={`col-span-12 md:col-span-6 min-h-[200px] flex flex-col
+                ${selectedTech && project.technologies.includes(selectedTech) ? 'opacity-100' : selectedTech ? 'opacity-40' : 'opacity-100'}
+                transition-opacity duration-200`}
+            >
+              <div className="border-b border-neutral-200 pb-2 mb-4">
+                <div className="flex justify-between items-baseline">
+                  <h3 className="text-base font-normal">{project.title}</h3>
+                  <span className="text-sm font-light text-muted">{project.year}</span>
+                </div>
+              </div>
+              
+              <p className="text-sm font-light mb-4 flex-grow">{project.description}</p>
+              
+              <div className="mt-auto">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {project.technologies.map((tech, techIndex) => (
+                    <button 
+                      key={techIndex}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTech(tech === selectedTech ? null : tech);
+                      }}
+                      className={`tech-tag text-xs font-light transition-colors
+                        ${tech === selectedTech 
+                          ? 'text-neutral-900' 
+                          : 'text-neutral-500'}`}
+                    >
+                      {tech}{techIndex < project.technologies.length - 1 ? " ·" : ""}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="h-6 flex items-center"> {/* Fixed height container */}
+                  {project.githubUrl && (
+                    <a 
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-light hover:text-neutral-500 transition-colors"
+                    >
+                      <span className="flex items-center gap-1">
+                        <FaGithub className="w-3 h-3" /> View Repository
+                      </span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* Additional Section - Redesigned */}
+      <motion.section className="mb-12">
+        <h2 className="text-2xl font-normal tracking-tight mb-6">Additional</h2>
+        
+        <div className="space-y-6">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Languages</p>
+            <div className="flex flex-wrap gap-x-2 text-sm font-light">
+              <span>Python</span>
+              <span className="text-neutral-300">·</span>
+              <span>TypeScript</span>
+              <span className="text-neutral-300">·</span>
+              <span>Java</span>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Technologies</p>
+            <p className="text-sm font-light">
+              OpenAI API · PyTorch · Flask · LangChain · NextJS · Leptos · Git · Linux · IDA · Docker · Ansible · Openstack · Ceph · Kubernetes
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Other</p>
+            <p className="text-sm font-light">CyberCorps SFS Recipient</p>
+          </div>
+        </div>
+      </motion.section>
+    </motion.div>
   );
 };
 

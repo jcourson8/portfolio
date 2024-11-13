@@ -177,7 +177,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="dark flex h-screen">
+    <div className="flex h-screen">
       <div className="flex flex-1 relative">
         <Sidebar
           isExpanded={isSidebarExpanded}

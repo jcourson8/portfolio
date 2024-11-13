@@ -102,6 +102,7 @@ export interface Media {
 export interface Project {
   id: number;
   slug: string;
+  year: number;
   title: string;
   description: string;
   projectUrl?: string | null;
@@ -132,6 +133,7 @@ export interface Project {
   completionDate?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -233,6 +235,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   slug?: T;
+  year?: T;
   title?: T;
   description?: T;
   projectUrl?: T;
@@ -249,6 +252,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   completionDate?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -281,6 +285,17 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('typescript' | 'javascript' | 'css') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

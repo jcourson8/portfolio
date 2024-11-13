@@ -5,52 +5,48 @@ import { GithubIcon } from './icons/GithubIcon'
 import { ArrowUpperRightIcon } from './icons/ArrowUpperRightIcon'
 import { ExternalLinkIcon } from './icons/ExternalLinkIcon'
 
-export const ProjectCardSkeleton = () => {
+export const ProjectCardSkeleton: React.FC = () => {
   return (
-    <div className="border border-border py-4 px-5 rounded-lg shadow-lg h-full flex flex-col">
-      <div className="flex justify-between items-start mb-2">
-        <div className="h-7 bg-primary/10 rounded w-2/3 animate-pulse" />
-        <div className="w-4 h-4 bg-primary/10 rounded animate-pulse" />
+    <div className="flex flex-col h-[150px] border-b border-border py-4">
+      <div className="flex justify-between items-baseline mb-4">
+        <div className="w-1/2 h-6 bg-border/40 rounded-sm animate-pulse" />
+        <div className="w-16 h-4 bg-border/40 rounded-sm animate-pulse" />
       </div>
-      <div className="flex-grow space-y-2 mt-3">
-        <div className="h-4 bg-primary/10 rounded w-full animate-pulse" />
-        <div className="h-4 bg-primary/10 rounded w-3/4 animate-pulse" />
+      
+      <div className="flex-1 mb-4 space-y-2">
+        <div className="w-full h-4 bg-border/40 rounded-sm animate-pulse" />
+        <div className="w-3/4 h-4 bg-border/40 rounded-sm animate-pulse" />
       </div>
-      <div className="flex gap-2 mt-3">
-        <div className="h-6 bg-primary/10 rounded-full w-16 animate-pulse" />
-        <div className="h-6 bg-primary/10 rounded-full w-16 animate-pulse" />
+      
+      <div className="flex flex-wrap gap-2 mt-auto">
+        {[...Array(3)].map((_, index) => (
+          <div 
+            key={index}
+            className="w-16 h-3 bg-border/40 rounded-sm animate-pulse"
+          />
+        ))}
       </div>
     </div>
-  )
-}
+  );
+}; 
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
     <Link href={`/projects/${project.slug}`}>
-      <div className="group border border-border py-4 px-5 rounded-lg shadow-lg h-full flex flex-col transition-colors duration-300 hover:border-muted-foreground">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-semibold pr-4 flex-grow">{project.title}</h3>
-          <div className="flex-shrink-0">
-            <ArrowUpperRightIcon className="w-4 h-4 my-2 transition-colors duration-300 group-hover:stroke-muted-foreground" />
-          </div>
+      <div className="group flex flex-col h-[150px] border-b border-border py-4 transition-colors hover:border-muted">
+        <div className="flex justify-between items-baseline mb-4">
+          <h3 className="text-lg font-normal tracking-tight text-foreground pr-4">{project.title}</h3>
+          <span className="text-sm font-light text-muted">{project.year}</span>
         </div>
-        <p className="flex-grow font-light font-sm">{project.description}</p>
-        <div className="flex justify-between items-center mt-3">
-          <div className="flex flex-wrap gap-2">
-            {project.technologies?.map((tech, index) => (
-              <span key={index} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                {tech.name}
-              </span>
-            ))}
-          </div>
-          {/* <div className="flex items-center space-x-2">
-            {project.githubUrl && (
-              <GithubIcon githubUrl={project.githubUrl} altText="GitHub Repo" />
-            )}
-            {project.projectUrl && (
-              <ExternalLinkIcon projectUrl={project.projectUrl} altText="Website Link" />
-            )}
-          </div> */}
+        
+        <p className="text-sm font-light text-foreground/80 mb-4 flex-1 line-clamp-3">{project.description}</p>
+        
+        <div className="flex flex-wrap gap-2 mt-auto">
+          {project.technologies?.map((tech, index) => (
+            <span key={index} className="text-xs font-light text-muted">
+              {tech.name}{index < (project.technologies?.length ?? 0) - 1 ? " ·" : ""}
+            </span>
+          ))}
         </div>
       </div>
     </Link>

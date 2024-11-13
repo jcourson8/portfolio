@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+// app/projects/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next'
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
@@ -8,12 +8,13 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import { FaGithub } from 'react-icons/fa'
+import { cache } from 'react'
 
 import type { Project } from '@/payload-types'
 import TableOfContents, { TOCItem } from '@/components/TableOfContents'
-import { cache } from 'react'
-import styles from './ProjectPage.module.css'
 import RichText from '@/components/RichText'
+import { generateTableOfContents } from '@/utilities/toc'
 
 // Define params type
 type Params = Promise<{ slug: string }>
@@ -25,6 +26,18 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 type Props = {
   params: Params
   searchParams: SearchParams
+}
+
+// Query response type
+type QueryResponse = {
+  docs: Project[]
+  hasNextPage: boolean
+  hasPrevPage: boolean
+  nextPage: number | null
+  prevPage: number | null
+  pagingCounter: number
+  totalDocs: number
+  totalPages: number
 }
 
 export async function generateStaticParams(): Promise<{ params: Params }[]> {
@@ -39,82 +52,6 @@ export async function generateStaticParams(): Promise<{ params: Params }[]> {
   return projects.docs.map(({ slug }) => ({
     params: Promise.resolve({ slug: slug || '' })
   }))
-}
-
-export default async function ProjectPage(props: Props) {
-  const params = await props.params
-  const project = await queryProjectBySlug({ slug: params.slug })
-  if (!project) return notFound()
-
-  // const { tableOfContents, contentWithIds } = processContent(project.content_html || '')
-
-  return (
-    <>
-    <div className={`container max-w-4xl mx-auto py-12 flex ${styles.styledContent}`}>
-      <aside className="w-64 flex-shrink-0 hidden lg:block">
-        <div className="sticky top-24 space-y-6">
-          <Link 
-            href="/chat" 
-            prefetch={false}
-            className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-           {/* <TableOfContents items={tableOfContents} /> */}
-          <TableOfContents items={generateTableOfContents(project.content)} />
-        </div>
-      </aside>
-      <article className="flex-grow max-w-4xl mx-auto">
-        <div className="space-y-6">
-          <h1 className="text-4xl font-extrabold tracking-tight">{project.title}</h1>
-          <div className="flex items-center space-x-2">
-            {project.technologies?.map((technology, index) => (
-              <Badge key={index} variant="secondary">{technology.name}</Badge>
-            ))}
-          </div>
-          <Separator />
-          <RichText 
-            content={project.content} 
-            enableGutter={false}
-            enableProse={true}
-          />
-        </div>
-      </article>
-    </div>
-    </>
-  )
-}
-
-export async function generateMetadata(props: {
-  params: Params
-  searchParams: SearchParams
-}, parent: ResolvingMetadata): Promise<Metadata> {
-  const params = await props.params
-  const project = await queryProjectBySlug({ slug: params.slug })
-  if (!project) return {}
-
-  const previousImages = (await parent).openGraph?.images || []
-
-  return {
-    title: project.title,
-    description: project.description,
-    openGraph: {
-      images: [...previousImages]
-    }
-  }
-}
-
-// Query response type
-type QueryResponse = {
-  docs: Project[]
-  hasNextPage: boolean
-  hasPrevPage: boolean
-  nextPage: number | null
-  prevPage: number | null
-  pagingCounter: number
-  totalDocs: number
-  totalPages: number
 }
 
 const queryProjectBySlug = cache(async ({ 
@@ -140,23 +77,115 @@ const queryProjectBySlug = cache(async ({
   return result.docs[0] || null
 })
 
-function generateTableOfContents(content: any): TOCItem[] {
-  const tableOfContents: TOCItem[] = []
-  
-  if (!content?.root?.children) return tableOfContents
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const params = await props.params
+  const project = await queryProjectBySlug({ slug: params.slug })
+  if (!project) return {}
 
-  content.root.children.forEach((node: any, index: number) => {
-    if (node.type === 'heading' && (node.tag === 'h1' || node.tag === 'h2')) {
-      const text = node.children?.[0]?.text || ''
-      const id = `heading-${text.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-      
-      tableOfContents.push({
-        id,
-        text,
-        level: node.tag === 'h1' ? 1 : 2
-      })
+  const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: project.title,
+    description: project.description,
+    openGraph: {
+      images: [...previousImages]
     }
-  })
+  }
+}
 
-  return tableOfContents
+export default async function ProjectPage(props: Props) {
+  const params = await props.params
+  const project = await queryProjectBySlug({ slug: params.slug })
+  if (!project) return notFound()
+
+  const tableOfContents = generateTableOfContents(project.content)
+
+  return (
+    <div className="container max-w-4xl p-8 leading-tight">
+      <Link 
+        href="/projects" 
+        prefetch={false}
+        className="inline-flex items-center gap-3 text-sm font-light text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        <span className="tracking-wide">Back to Projects</span>
+      </Link>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <aside className="hidden lg:block lg:col-span-3">
+          <div className="lg:sticky lg:top-24 space-y-8">
+            <TableOfContents items={tableOfContents} />
+          </div>
+        </aside>
+
+        <main className="lg:col-span-9">
+          <article className="max-w-4xl space-y-8">
+            <header className="space-y-8">
+              <div className="space-y-6">
+                <div className="flex items-start justify-between gap-4">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight tracking-tight text-foreground">
+                    {project.title}
+                  </h1>
+
+                  {project.githubUrl && (
+                    <a 
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 p-2.5 
+                      bg-secondary/50 rounded-lg hover:bg-secondary transition-colors shrink-0"
+                      aria-label="View Repository"
+                    >
+                      <FaGithub className="w-5 h-5" />
+                      <span className="tracking-wide hidden sm:inline">View Repository</span>
+                    </a>
+                  )}
+                </div>
+                
+                <div className="flex flex-wrap gap-1.5">
+                  {project.technologies?.map((tech, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="secondary"
+                      className="px-2.5 py-0.5 text-xs sm:text-sm font-light bg-secondary/50"
+                    >
+                      {tech.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              
+              <Separator className="bg-border" />
+            </header>
+
+            <div className="prose prose-neutral dark:prose-invert max-w-none
+           prose-headings:font-extralight prose-headings:tracking-tight
+           prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
+           prose-p:text-base prose-p:leading-relaxed prose-p:font-light
+           prose-p:text-muted-foreground
+           prose-strong:font-normal prose-strong:text-foreground
+           prose-a:text-foreground prose-a:no-underline hover:prose-a:underline
+           prose-a:underline-offset-4
+           prose-pre:bg-secondary prose-pre:border prose-pre:border-border
+           prose-code:text-foreground prose-code:font-mono
+           prose-code:before:content-[''] prose-code:after:content-['']
+           prose-img:rounded-md prose-img:border prose-img:border-border
+           prose-blockquote:border-l-2 prose-blockquote:border-border
+           prose-blockquote:pl-6 prose-blockquote:italic
+           prose-ul:list-disc prose-ul:pl-6 prose-ul:marker:text-muted-foreground
+           prose-ol:list-decimal prose-ol:pl-6 prose-ol:marker:text-muted-foreground pb-48">
+              <RichText 
+                content={project.content}
+                enableGutter={false}
+                enableProse={true}
+              />
+            </div>
+          </article>
+        </main>
+      </div>
+    </div>
+  )
 }

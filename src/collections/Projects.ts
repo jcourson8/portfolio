@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload'
-import { HTMLConverterFeature, lexicalEditor, lexicalHTML } from '@payloadcms/richtext-lexical'
+import { HTMLConverterFeature, lexicalEditor, lexicalHTML, BlocksFeature, defaultEditorFeatures } from '@payloadcms/richtext-lexical'
+import { Code } from '@/blocks/Code/config'
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -9,12 +10,20 @@ export const Projects: CollectionConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,  // Enable drafts
+  },
   fields: [
     {
       name: 'slug',
       type: 'text',
       required: true,
       unique: true,
+    },
+    {
+      name: 'year',
+      type: 'number',
+      required: true,
     },
     {
       name: 'title',
@@ -55,7 +64,14 @@ export const Projects: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
-      editor: lexicalEditor(),
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [Code],
+          }),
+        ],
+      }),
       required: true,
     },
     // lexicalHTML('content', { name: 'content_html' }),

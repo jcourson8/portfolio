@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import ChevronLeftIcon from './icons/ChevronLeftIcon'
-import ChevronRightIcon from './icons/ChevronRightIcon'
-import TrashIcon from './icons/TrashIcon'
-import { PlusCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChevronLeft, ChevronRight, PlusCircle, Trash2 } from 'lucide-react'
 import { useConversationContext } from '@/context/ConversationContext'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import ChevronLeftIcon from './icons/ChevronLeftIcon'
+import ChevronRightIcon from './icons/ChevronRightIcon'
 
 interface SidebarProps {
   isExpanded: boolean
@@ -20,7 +19,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedConversation,
 }) => {
   const router = useRouter()
-
   const { 
     conversations, 
     deleteConversation,
@@ -29,13 +27,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     isLoading,
   } = useConversationContext();
 
+  // Mobile overflow handling
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768 && isExpanded) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = 'auto';
-      }
+      document.body.style.overflow = 
+        window.innerWidth <= 768 && isExpanded ? 'hidden' : 'auto';
     };
 
     window.addEventListener('resize', handleResize);
@@ -50,9 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleConversationClick = (id: string) => {
     setSelectedConversation(id)
     router.push(`/chat/${id}`)
-    if (window.innerWidth <= 768) {
-      toggleSidebar()
-    }
+    if (window.innerWidth <= 768) toggleSidebar()
   }
 
   const handleDeleteConversation = (id: string) => {
@@ -66,41 +60,46 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleNewConversation = () => {
     const id = createNewConversation()
     router.push(`/chat/${id}`)
-    if (window.innerWidth <= 768) {
-      toggleSidebar()
-    }
+    if (window.innerWidth <= 768) toggleSidebar()
   }
 
   const renderConversationList = () => {
     if (isLoading) {
       return (
-        <>
+        <div className="space-y-2">
           {[...Array(5)].map((_, index) => (
-            <Skeleton key={index} className="h-10 w-full mb-2" />
+            <Skeleton key={index} className="h-10 w-full" />
           ))}
-        </>
+        </div>
       )
     }
 
     return conversations.map((conv) => (
       <div
         key={conv.id}
-        className={`p-2 cursor-pointer rounded-md flex justify-between items-center mb-1 ${
-          selectedConversation === conv.id ? 'bg-neutral-800' : 'hover:bg-neutral-800'
-        }`}
+        className={`
+          p-2 cursor-pointer rounded-md 
+          flex justify-between items-center mb-1
+          border transition-colors duration-200
+          ${selectedConversation === conv.id 
+            ? 'border-border text-foreground' 
+            : 'border-transparent text-muted-foreground hover:border-border'
+          }
+        `}
         onClick={() => handleConversationClick(conv.id)}
       >
-        <div className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="flex-grow text-sm tracking-tight truncate pr-2">
           {conv.messages[0]?.text.substring(0, 30) || 'New Conversation'}...
-        </div>
+        </span>
         <button
           onClick={(e) => {
             e.stopPropagation()
             handleDeleteConversation(conv.id)
           }}
-          className="ml-2 p-1 text-destructive-foreground hover:text-destructive transition-colors duration-200"
+          className="p-1 text-muted-foreground hover:text-destructive 
+            transition-colors duration-200"
         >
-          <TrashIcon className="w-4 h-4" />
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
     ))
@@ -108,22 +107,31 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
+      {/* Mobile overlay */}
       <div 
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 md:hidden ${
-          isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`} 
+        className={`
+          fixed inset-0 bg-background/80 backdrop-blur-sm z-40 
+          transition-opacity duration-300 md:hidden
+          ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+        `} 
         onClick={toggleSidebar}
       />
-      <div className={`absolute left-0 top-0 h-full md:relative`}>
+
+      {/* Sidebar container */}
+      <div className="absolute left-0 top-0 h-full md:relative">
         <div
-          className={`shadow-lg transition-all duration-300 ease-in-out h-full 
-                      ${isExpanded ? 'w-64 border-r border-secondary' : 'w-0'} 
-                      overflow-hidden fixed md:relative bg-background z-50`}
+          className={`
+            h-full transition-all duration-300 ease-in-out
+            border-r border-border bg-background
+            fixed md:relative z-50
+            ${isExpanded ? 'w-64' : 'w-0'}
+            overflow-hidden
+          `}
         >
           {isExpanded && (
             <div className="p-5 pt-6 h-full overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold pl-2">Conversations</h3>
+                <h3 className="text-lg font-normal pl-2">Conversations</h3>
                 <Button 
                   onClick={handleNewConversation} 
                   className="p-1 h-auto" 
@@ -132,17 +140,31 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <PlusCircle className="h-4 w-4" />
                 </Button>
               </div>
-              {renderConversationList()}
+              <div className="space-y-1">
+                {renderConversationList()}
+              </div>
             </div>
           )}
         </div>
+
+        {/* Toggle button */}
         <button
-          className={`absolute top-1/2 transform -translate-y-1/2 text-primary opacity-50 hover:text-primary hover:opacity-100 transition-all duration-300 ease-in-out z-50 m-2 rounded-md ${
-            isExpanded ? 'left-64 hover:-translate-x-1' : 'left-0 hover:translate-x-1'
-          }`}
+          className={`
+            absolute top-1/2 transform -translate-y-1/2 
+            text-primary opacity-50 
+            hover:text-primary hover:opacity-100 
+            transition-all duration-300 ease-in-out z-50 m-2 rounded-md
+            ${isExpanded 
+              ? 'left-64 hover:-translate-x-1' 
+              : 'left-0 hover:translate-x-1'
+            }
+          `}
           onClick={toggleSidebar}
         >
-          {isExpanded ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          {isExpanded 
+            ? <ChevronLeftIcon /> 
+            : <ChevronRightIcon />
+          }
         </button>
       </div>
     </>
