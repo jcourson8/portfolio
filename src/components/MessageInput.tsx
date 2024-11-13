@@ -72,9 +72,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ sendMessage, isWaitingForRe
             }`}
           >
             {isWaitingForResponse ? (
-              <div className="w-3 h-3 bg-white rounded-[1px]" />
+              <div className="w-3 h-3 bg-primary rounded-[1px]" />
             ) : (
-              <ArrowUp className="w-6 h-6 text-primary-primary" />
+              <ArrowUp className="w-6 h-6 text-primary-primary stroke-1" />
             )}
           </button>
         </div>

@@ -33,7 +33,7 @@ export const ProjectCardSkeleton: React.FC = () => {
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
     <Link href={`/projects/${project.slug}`}>
-      <div className="group flex flex-col h-[120px] sm:h-[150px] border-b border-border py-3 sm:py-4 transition-colors hover:border-muted">
+      <div className="group flex flex-col h-[120px] sm:h-[150px] border-b border-border py-3 sm:py-4 transition-colors hover:border-muted-foreground">
         <div className="flex justify-between items-baseline mb-2 sm:mb-4">
           <h3 className="text-base sm:text-lg font-normal tracking-tight text-foreground pr-4">{project.title}</h3>
           <span className="text-xs sm:text-sm font-light text-muted">{project.year}</span>

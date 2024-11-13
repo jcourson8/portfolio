@@ -8,19 +8,27 @@ export function useConversations() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load conversations from localStorage on mount
+  // Load conversations and sidebar state from localStorage on mount
   useEffect(() => {
     const loadConversations = async () => {
       setIsLoading(true);
       try {
+        // Load conversations
         const storedConversations = localStorage.getItem('conversations');
         if (storedConversations) {
           const parsedConversations = JSON.parse(storedConversations);
           setConversations(parsedConversations);
-          setIsSidebarExpanded(parsedConversations.length > 0);
+        }
+
+        // Load sidebar state
+        const storedSidebarState = localStorage.getItem('sidebarExpanded');
+        if (storedSidebarState !== null) {
+          // Only set expanded on larger screens
+          const isLargeScreen = window.innerWidth >= 768; // md breakpoint
+          setIsSidebarExpanded(isLargeScreen && JSON.parse(storedSidebarState));
         }
       } catch (error) {
-        console.error('Error loading conversations:', error);
+        console.error('Error loading data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -28,6 +36,11 @@ export function useConversations() {
 
     loadConversations();
   }, []);
+
+  // Save sidebar state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('sidebarExpanded', JSON.stringify(isSidebarExpanded));
+  }, [isSidebarExpanded]);
 
   // Save conversations to localStorage when they change
   useEffect(() => {
@@ -53,7 +66,9 @@ export function useConversations() {
       if (conv.id === conversationId) {
         return {
           ...conv,
-          messages: conv.messages.map(msg => (msg.id === messageId ? { ...msg, ...updates } : msg)),
+          messages: conv.messages.map(msg => 
+            msg.id === messageId ? { ...msg, ...updates } as Message : msg
+          ),
         };
       }
       return conv;

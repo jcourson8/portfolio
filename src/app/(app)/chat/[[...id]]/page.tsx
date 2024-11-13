@@ -185,7 +185,10 @@ export default function ChatPage() {
           selectedConversation={id || null}
         />
         <div className={`flex-1 flex flex-col transition-all duration-300`}>
-          <Header />
+          <Header 
+            toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+            showMenuButton={true} 
+          />
           <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
             {id ? (
               <MessageDisplay messages={messages} />
@@ -193,12 +196,14 @@ export default function ChatPage() {
               <LandingIntro />
             )}
           </div>
-          <div className="pb-safe">
-            <MessageInput 
-              sendMessage={handleSendMessage} 
-              isWaitingForResponse={isLoading} 
-              onStop={stopProcessing} 
-            />
+          <div className="fixed bottom-0 left-0 right-0 bg-background">
+            <div className={`${isSidebarExpanded ? 'md:pl-64' : ''} transition-all duration-300`}>
+              <MessageInput 
+                sendMessage={handleSendMessage} 
+                isWaitingForResponse={isLoading} 
+                onStop={stopProcessing} 
+              />
+            </div>
           </div>
         </div>
       </div>

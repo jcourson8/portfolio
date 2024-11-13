@@ -14,7 +14,7 @@ const BotMessage: React.FC<{ message: Message; isCurrent: boolean }> = ({ messag
   }, [message.text, isCurrent])
 
   return (
-    <div className="w-full flex items-start space-x-2">
+    <div className="w-full flex items-start space-x-2 ">
       <div className="flex-shrink-0">
         <div className="rounded-full p-3 bg-primary mr-2"></div>
       </div>
@@ -74,30 +74,30 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages }) => {
   }, [messages, isAtBottom]);
 
   return (
-    <div className="w-full px-4 h-full relative">
+    <div className="w-full  px-4 relative h-full">
       <div 
         ref={scrollContainerRef} 
-        className="overflow-y-auto h-full pt-4 pb-16"
+        className="overflow-y-auto h-full pb-16 pt-4"
+        onScroll={handleScroll}
       >
-        <div className="max-w-3xl mx-auto space-y-4">
-          {messages.map((message, index) =>
-            message.user_id === 'bot' ? (
-              <BotMessage
-                key={message.id}
-                message={message}
-                isCurrent={index === messages.length - 1 && message.user_id === 'bot'}
-              />
-            ) : (
-              <UserMessage key={message.id} message={message} />
-            ),
+        <div className="max-w-3xl mx-auto space-y-4 ">
+        {messages.map((message, index) =>
+          message.user_id === 'bot' ? (
+            <BotMessage
+              key={message.id}
+              message={message}
+              isCurrent={index === messages.length - 1 && message.user_id === 'bot'}
+            />
+          ) : (
+            <UserMessage key={message.id} message={message} />
+          ),
           )}
         </div>
       </div>
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
-          className="absolute bottom-24 left-1/2 transform -translate-x-1/2 translate-y-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-full p-1.5 border border-secondary opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out shadow-lg z-10"
-          aria-label="Scroll to bottom"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 translate-y-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-full p-1.5 border border-secondary opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out shadow-lg z-10"
         >
           <ChevronDown size={24} />
         </button>
