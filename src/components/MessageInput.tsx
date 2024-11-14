@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 
 interface MessageInputProps {
@@ -16,7 +16,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   isLoading,
   onStop
 }) => {
-  const [message, setMessage] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -25,21 +26,42 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   };
 
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current && containerRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const newHeight = Math.min(scrollHeight, 200); // Max height of 200px
+      textareaRef.current.style.height = `${newHeight}px`;
+      containerRef.current.style.height = `${Math.max(newHeight + 32, 64)}px`; // 32px for padding, min height of 64px
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [value]);
+
   return (
     <form onSubmit={onSubmit} className="mt-auto w-full px-4 pb-2">
-      <div className="relative flex items-center bg-background/80 backdrop-blur-sm border border-border/50 p-4 rounded-2xl w-full max-w-3xl mx-auto shadow-lg">
+      <div 
+        ref={containerRef}
+        className="relative flex items-center bg-background/80 backdrop-blur-sm border border-border/50 p-4 rounded-2xl w-full max-w-3xl mx-auto shadow-lg transition-all duration-200 ease-in-out"
+      >
         <textarea
+          ref={textareaRef}
           value={value}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            adjustTextareaHeight();
+          }}
           onKeyDown={handleKeyDown}
           placeholder="Ask about my projects..."
-          className="flex-1 bg-transparent text-foreground focus:outline-none w-full resize-none max-h-[200px] overflow-y-auto"
+          className="flex-1 bg-transparent text-foreground focus:outline-none w-full resize-none overflow-y-auto ml-2"
           rows={1}
         />
         <button
           type="button"
           onClick={isLoading ? onStop : (e) => onSubmit(e)}
-          className={`ml-4 rounded-xl w-8 h-8 flex items-center justify-center border border-border/50 transition duration-300 ${
+          className={`ml-4 rounded-xl w-8 h-8 flex items-center justify-center border border-border/50 transition duration-300 mt-auto ${
             isLoading ? 'bg-destructive hover:bg-destructive/90' : 'bg-background/50 hover:border-primary hover:bg-background'
           }`}
         >
