@@ -1,12 +1,9 @@
-export interface Message {
-    id: string
-    text: string
-    user_id: string
-    timestamp: number
-    pending?: boolean;
-  }
-  
- export interface Conversation {
+import { Message as AIMessage } from 'ai';
+
+export interface Conversation {
     id: string;
-    messages: Message[];
-  }
+    messages: AIMessage[];
+}
+
+// Re-export the Message type if needed elsewhere in your app
+export type Message = AIMessage;

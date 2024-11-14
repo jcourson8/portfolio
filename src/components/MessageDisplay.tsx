@@ -1,109 +1,83 @@
 import { Message } from "@/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import MarkdownRenderer from "./MarkdownRender";
-import { ChevronDown } from 'lucide-react';
 
-// Bot message component
-const BotMessage: React.FC<{ message: Message; isCurrent: boolean }> = ({ message, isCurrent }) => {
-  const contentRef = useRef<HTMLDivElement>(null)
+const ToolInvocation: React.FC<{ tool: any }> = ({ tool }) => (
+  <div className="my-2 p-2 rounded bg-muted/50 border border-border">
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+        🔧 {tool.toolName}
+      </span>
+    </div>
+    {tool.result && (
+      <div className="mt-2 text-sm">
+        <pre className="bg-muted p-2 rounded">
+          {JSON.stringify(tool.result, null, 2)}
+        </pre>
+      </div>
+    )}
+  </div>
+);
+
+const MessageContent: React.FC<{ message: Message; isCurrent: boolean }> = ({ message, isCurrent }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isCurrent && contentRef.current) {
-      contentRef.current.scrollIntoView({ behavior: 'smooth' })
+      contentRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [message.text, isCurrent])
+  }, [message.content, isCurrent]);
 
   return (
-    <div className="w-full flex items-start space-x-2 ">
-      <div className="flex-shrink-0">
-        <div className="rounded-full p-3 bg-primary mr-2"></div>
-      </div>
-      <div className="flex-grow" ref={contentRef}>
-        <MarkdownRenderer content={message.text} />
+    <div className={`w-full flex items-start space-x-2 ${
+      message.role === 'user' ? 'justify-end' : ''
+    }`}>
+      {message.role === 'assistant' && (
+        <div className="flex-shrink-0">
+          <div className="rounded-full p-3 bg-primary mr-2"></div>
+        </div>
+      )}
+      <div className={`flex-grow ${message.role === 'user' ? 'w-3/4 ml-auto' : ''}`} ref={contentRef}>
+        <div className={message.role === 'user' ? 'bg-background border border-border rounded-lg p-3 shadow-sm' : ''}>
+          <MarkdownRenderer content={message.content} />
+          {message.toolInvocations?.map((tool, index) => (
+            <ToolInvocation key={`${tool.toolName}-${index}`} tool={tool} />
+          ))}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-// User message component
-const UserMessage: React.FC<{ message: Message }> = ({ message }) => (
-  <div className="w-3/4 ml-auto">
-    <div className="bg-background border border-border rounded-lg p-3 shadow-sm">
-      <p className="whitespace-pre-wrap break-words">{message.text}</p>
-    </div>
-  </div>
-)
-
-// Main message display component
 interface MessageDisplayProps {
-  messages: Message[]
+  messages: Message[];
+  isLoading?: boolean;
 }
 
-const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages }) => {
+const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages, isLoading }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const [isAtBottom, setIsAtBottom] = useState(true);
-
-  const scrollToBottom = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-    }
-  };
-
-  const handleScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      const scrolledToBottom = scrollHeight - scrollTop - clientHeight < 1;
-      setIsAtBottom(scrolledToBottom);
-      setShowScrollButton(!scrolledToBottom);
-    }
-  };
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAtBottom) {
-      scrollToBottom();
-    }
-  }, [messages, isAtBottom]);
 
   return (
-    <div className="w-full  px-4 relative h-full">
-      <div 
-        ref={scrollContainerRef} 
-        className="overflow-y-auto h-full pb-16 pt-4"
-        onScroll={handleScroll}
-      >
-        <div className="max-w-3xl mx-auto space-y-4 ">
-        {messages.map((message, index) =>
-          message.user_id === 'bot' ? (
-            <BotMessage
+    <div className="w-full px-4 relative h-full">
+      <div ref={scrollContainerRef} className="overflow-y-auto h-full pb-16 pt-4">
+        <div className="max-w-3xl mx-auto space-y-4">
+          {messages.map((message, index) => (
+            <MessageContent
               key={message.id}
               message={message}
-              isCurrent={index === messages.length - 1 && message.user_id === 'bot'}
+              isCurrent={index === messages.length - 1}
             />
-          ) : (
-            <UserMessage key={message.id} message={message} />
-          ),
+          ))}
+          {isLoading && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              <span>AI is thinking...</span>
+            </div>
           )}
         </div>
       </div>
-      {showScrollButton && (
-        <button
-          onClick={scrollToBottom}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 translate-y-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-full p-1.5 border border-secondary opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out shadow-lg z-10"
-        >
-          <ChevronDown size={24} />
-        </button>
-      )}
     </div>
-  )
-}
+  );
+};
 
-export default MessageDisplay
+export default MessageDisplay;

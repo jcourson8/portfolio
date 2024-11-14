@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import ChevronLeftIcon from './icons/ChevronLeftIcon'
 import ChevronRightIcon from './icons/ChevronRightIcon'
 import { motion } from 'framer-motion'
+import { Message } from '@/types'
 
 interface SidebarProps {
   isExpanded: boolean
@@ -29,9 +30,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     setIsSidebarExpanded,
   } = useConversationContext();
 
-  // Set initial sidebar state based on screen size
   useEffect(() => {
-    const isSmallScreen = window.innerWidth < 768; // md breakpoint
+    const isSmallScreen = window.innerWidth < 768;
     if (isSmallScreen) {
       setIsSidebarExpanded(false);
     }
@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (window.innerWidth <= 768) toggleSidebar()
   }
 
-  const handleDeleteConversation = (id: string) => {
+  const handleDeleteConversation = async (id: string) => {
     deleteConversation(id)
     if (id === selectedConversation) {
       setSelectedConversation(null)
@@ -55,6 +55,16 @@ const Sidebar: React.FC<SidebarProps> = ({
     const id = createNewConversation()
     router.push(`/chat/${id}`)
     if (window.innerWidth <= 768) toggleSidebar()
+  }
+
+  const getConversationTitle = (messages: Message[]) => {
+    if (!messages.length) return 'New Conversation';
+    
+    const firstUserMessage = messages.find(m => m.role === 'user');
+    if (!firstUserMessage) return 'New Conversation';
+    
+    const title = firstUserMessage.content.substring(0, 30);
+    return title.length === 30 ? `${title}...` : title;
   }
 
   const renderConversationList = () => {
@@ -70,7 +80,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
       <>
-        {/* New Conversation Button */}
         <div
           onClick={handleNewConversation}
           className={`
@@ -91,7 +100,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </span>
         </div>
 
-        {/* Existing conversations */}
         {conversations.map((conv) => (
           <div
             key={conv.id}
@@ -108,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => handleConversationClick(conv.id)}
           >
             <span className="flex-grow text-sm truncate pr-2">
-              {conv.messages[0]?.text.substring(0, 30) || 'New Conversation'}...
+              {getConversationTitle(conv.messages)}
             </span>
             <button
               onClick={(e) => {
@@ -130,7 +138,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile overlay */}
       <div 
         className={`
           fixed inset-0 bg-background/80 backdrop-blur-sm z-40 
@@ -140,7 +147,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         onClick={toggleSidebar}
       />
 
-      {/* Sidebar container */}
       <div className="absolute left-0 top-0 h-full md:relative">
         <motion.div
           initial={false}
@@ -161,7 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <motion.div
             initial={false}
             animate={{
-              x: isExpanded ? 0 : -256, // -16rem in pixels
+              x: isExpanded ? 0 : -256,
             }}
             transition={{
               duration: 0.3,
@@ -191,7 +197,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </motion.div>
         </motion.div>
 
-        {/* Toggle button */}
         <motion.button
           initial={false}
           animate={{
