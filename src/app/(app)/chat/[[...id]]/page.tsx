@@ -75,19 +75,19 @@ export default function ChatPage() {
             toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
             showMenuButton={true} 
           />
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto relative pb-[100px] md:pb-0">
             {id ? (
               <MessageDisplay 
                 messages={messages} 
                 isLoading={isLoading}
-                streamingData={data} // Pass streaming data
+                streamingData={data}
               />
             ) : (
               <LandingIntro />
             )}
           </div>
-          <div className="fixed bottom-0 left-0 right-0 bg-background">
-            <div className={`${isSidebarExpanded ? 'md:pl-64' : ''} transition-all duration-300`}>
+          <div className="fixed bottom-0 left-0 right-0 bg-background md:relative">
+            <div className={`transition-all duration-300`}>
               <MessageInput 
                 value={input}
                 onChange={handleInputChange}

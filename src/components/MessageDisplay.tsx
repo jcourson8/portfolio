@@ -48,8 +48,8 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
   console.log(messages);
 
   return (
-    <div className="w-full px-4 relative h-full">
-      <div className="overflow-y-auto h-full pb-32 pt-4">
+    <div className="w-full px-4">
+      <div className="overflow-y-auto pb-4 pt-4">
         <div className="max-w-3xl mx-auto">
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];
