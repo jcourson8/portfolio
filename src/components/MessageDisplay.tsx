@@ -2,49 +2,28 @@ import { Message } from "@/types";
 import { useEffect, useRef } from "react";
 import MarkdownRenderer from "./MarkdownRender";
 
-const ToolInvocation: React.FC<{ tool: any }> = ({ tool }) => (
-  <div className="my-2 p-2 rounded bg-muted/50 border border-border">
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-        🔧 {tool.toolName}
-      </span>
-    </div>
-    {tool.result && (
-      <div className="mt-2 text-sm">
-        <pre className="bg-muted p-2 rounded">
-          {JSON.stringify(tool.result, null, 2)}
-        </pre>
-      </div>
-    )}
-  </div>
-);
+interface ToolCallDisplayProps {
+  tool: {
+    toolName: string;
+    args: any;
+    result?: any;
+  };
+}
 
-const MessageContent: React.FC<{ message: Message; isCurrent: boolean }> = ({ message, isCurrent }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
+const ToolCallDisplay: React.FC<ToolCallDisplayProps> = ({ tool }) => {
+  let toolDescription;
 
-  useEffect(() => {
-    if (isCurrent && contentRef.current) {
-      contentRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [message.content, isCurrent]);
+  switch (tool.toolName) {
+    case 'getProjects':
+      toolDescription = 'Looking up projects...';
+      break;
+    default:
+      toolDescription = `Using ${tool.toolName}`;
+  }
 
   return (
-    <div className={`w-full flex items-start space-x-2 ${
-      message.role === 'user' ? 'justify-end' : ''
-    }`}>
-      {message.role === 'assistant' && (
-        <div className="flex-shrink-0">
-          <div className="rounded-full p-3 bg-primary mr-2"></div>
-        </div>
-      )}
-      <div className={`flex-grow ${message.role === 'user' ? 'w-3/4 ml-auto' : ''}`} ref={contentRef}>
-        <div className={message.role === 'user' ? 'bg-background border border-border rounded-lg p-3 shadow-sm' : ''}>
-          <MarkdownRenderer content={message.content} />
-          {message.toolInvocations?.map((tool, index) => (
-            <ToolInvocation key={`${tool.toolName}-${index}`} tool={tool} />
-          ))}
-        </div>
-      </div>
+    <div className="py-1 px-3 mt-2 rounded-full bg-muted/10 border border-border inline-block">
+      {toolDescription}
     </div>
   );
 };
@@ -52,28 +31,69 @@ const MessageContent: React.FC<{ message: Message; isCurrent: boolean }> = ({ me
 interface MessageDisplayProps {
   messages: Message[];
   isLoading?: boolean;
+  streamingData?: any;
 }
 
-const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages, isLoading }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+const MessageDisplay: React.FC<MessageDisplayProps> = ({ 
+  messages, 
+  isLoading,
+  streamingData 
+}) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, streamingData]);
+
+  console.log(messages);
 
   return (
     <div className="w-full px-4 relative h-full">
-      <div ref={scrollContainerRef} className="overflow-y-auto h-full pb-16 pt-4">
-        <div className="max-w-3xl mx-auto space-y-4">
-          {messages.map((message, index) => (
-            <MessageContent
-              key={message.id}
-              message={message}
-              isCurrent={index === messages.length - 1}
-            />
-          ))}
-          {isLoading && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+      <div className="overflow-y-auto h-full pb-32 pt-4">
+        <div className="max-w-3xl mx-auto">
+          {messages.map((message, index) => {
+            const nextMessage = messages[index + 1];
+            const prevMessage = messages[index - 1];
+            const isConsecutiveAI = message.role === 'assistant' && nextMessage?.role === 'assistant';
+            const isPreviousAI = message.role === 'assistant' && prevMessage?.role === 'assistant';
+            
+            return (
+              <div 
+                key={message.id} 
+                className={`flex ${
+                  message.role === 'user' ? 'justify-end' : 'justify-start'
+                } ${isConsecutiveAI ? 'mb-1' : 'mb-4'}`}
+              >
+                <div className={`${
+                  message.role === 'user' 
+                    ? 'bg-primary/5' 
+                    : ''
+                } rounded-xl px-4 ${
+                  isPreviousAI ? 'pt-1' : 'pt-3'
+                } ${
+                  isConsecutiveAI ? 'pb-1' : 'pb-3'
+                }`}>
+                  <MarkdownRenderer content={message.content} />
+                  
+                  {message.toolInvocations?.map((tool, idx) => (
+                    <ToolCallDisplay 
+                      key={`${message.id}-tool-${idx}`} 
+                      tool={tool} 
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {isLoading && !streamingData && (
+            <div className="flex items-center gap-2 text-muted-foreground pl-4">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
               <span>AI is thinking...</span>
             </div>
           )}
+          
+          <div ref={bottomRef} />
         </div>
       </div>
     </div>

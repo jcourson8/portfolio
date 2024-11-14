@@ -5,5 +5,4 @@ export interface Conversation {
     messages: AIMessage[];
 }
 
-// Re-export the Message type if needed elsewhere in your app
 export type Message = AIMessage;

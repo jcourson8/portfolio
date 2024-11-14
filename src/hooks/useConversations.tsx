@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Conversation, Message } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'next/navigation';
+
+// Helper function to revive dates and complex objects
+const reviveMessage = (message: Message): Message => {
+  return {
+    ...message,
+    createdAt: message.createdAt ? new Date(message.createdAt) : undefined,
+    toolInvocations: message.toolInvocations || undefined
+  };
+};
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, _setSelectedConversation] = useState<string | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   // Load initial state
   useEffect(() => {
@@ -15,7 +26,13 @@ export function useConversations() {
       try {
         const storedConversations = localStorage.getItem('conversations');
         if (storedConversations) {
-          setConversations(JSON.parse(storedConversations));
+          const parsed = JSON.parse(storedConversations);
+          // Revive dates and complex objects in messages
+          const revived = parsed.map((conv: Conversation) => ({
+            ...conv,
+            messages: conv.messages.map(reviveMessage)
+          }));
+          setConversations(revived);
         }
 
         const storedSidebarState = localStorage.getItem('sidebarExpanded');
@@ -33,7 +50,7 @@ export function useConversations() {
     loadConversations();
   }, []);
 
-  // Persist state
+  // Persist state with custom serialization
   useEffect(() => {
     localStorage.setItem('conversations', JSON.stringify(conversations));
   }, [conversations]);
@@ -50,7 +67,7 @@ export function useConversations() {
     };
     
     setConversations(prev => [...prev, newConversation]);
-    setSelectedConversation(newId);
+    _setSelectedConversation(newId);
     
     if (window.innerWidth > 768) {
       setIsSidebarExpanded(true);
@@ -59,10 +76,18 @@ export function useConversations() {
     return newId;
   };
 
+  const setSelectedConversation = (id: string | null) => {
+    if (id) {
+      router.push(`/chat/${id}`);
+    }
+    _setSelectedConversation(id);
+  };
+
   const deleteConversation = (id: string) => {
     setConversations(prev => prev.filter(conv => conv.id !== id));
     if (selectedConversation === id) {
-      setSelectedConversation(null);
+      router.push('/chat');
+      _setSelectedConversation(null);
     }
   };
 

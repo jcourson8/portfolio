@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { useChat } from 'ai/react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
@@ -18,7 +19,6 @@ export default function ChatPage() {
     conversations,
     isSidebarExpanded,
     setIsSidebarExpanded,
-    setSelectedConversation,
     createNewConversation,
     updateConversation,
   } = useConversationContext();
@@ -30,15 +30,37 @@ export default function ChatPage() {
     handleSubmit,
     isLoading,
     stop,
+    data, // Add this for streaming data
   } = useChat({
     id,
-    initialMessages: id ? conversations.find(conv => conv.id === id)?.messages || [] : [],
+    initialMessages: id 
+      ? conversations.find(conv => conv.id === id)?.messages || [] 
+      : [],
     onFinish: (message) => {
       if (id) {
         updateConversation(id, messages);
       }
     },
+    onResponse: (response) => {
+      if (!id) {
+        const newId = createNewConversation();
+        updateConversation(newId, messages);
+      }
+    },
+    body: {
+      id,
+      // Add any additional context you want to send to the API
+    },
+    // Enable multi-step tool calling
+    maxSteps: 3,
   });
+
+  // Save messages whenever they change
+  useEffect(() => {
+    if (id && messages.length > 0) {
+      updateConversation(id, messages);
+    }
+  }, [id, messages]);
 
   return (
     <div className="flex h-screen">
@@ -58,6 +80,7 @@ export default function ChatPage() {
               <MessageDisplay 
                 messages={messages} 
                 isLoading={isLoading}
+                streamingData={data} // Pass streaming data
               />
             ) : (
               <LandingIntro />
