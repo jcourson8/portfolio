@@ -2,6 +2,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
 import { getProjects } from '@/actions/getProjects';
+import { getFormattedProjects } from '@/actions/getFormatedProject';
 import { NextRequest } from 'next/server';
 
 const model = anthropic('claude-3-haiku-20240307');
@@ -25,6 +26,19 @@ export async function POST(req: NextRequest) {
             } catch (error) {
               console.error('Error fetching projects:', error);
               throw new Error('Failed to fetch projects');
+            }
+          },
+        }),
+        getFormattedProjects: tool({
+          description: 'Get a concise text summary of all portfolio projects',
+          parameters: z.object({}),
+          execute: async () => {
+            try {
+              const formattedProjects = await getFormattedProjects();
+              return { summary: formattedProjects };
+            } catch (error) {
+              console.error('Error fetching formatted projects:', error);
+              throw new Error('Failed to fetch formatted projects');
             }
           },
         }),

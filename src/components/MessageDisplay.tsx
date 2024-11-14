@@ -1,5 +1,5 @@
 import { Message } from "@/types";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import MarkdownRenderer from "./MarkdownRender";
 
 interface ToolCallDisplayProps {
@@ -12,9 +12,10 @@ interface ToolCallDisplayProps {
 
 const ToolCallDisplay: React.FC<ToolCallDisplayProps> = ({ tool }) => {
   let toolDescription;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   switch (tool.toolName) {
-    case 'getProjects':
+    case 'getFormattedProjects':
       toolDescription = 'Looking up projects...';
       break;
     default:
@@ -22,8 +23,33 @@ const ToolCallDisplay: React.FC<ToolCallDisplayProps> = ({ tool }) => {
   }
 
   return (
-    <div className="py-1 px-3 mt-2 rounded-full bg-muted/10 border border-border inline-block">
-      {toolDescription}
+    <div className="py-1 px-3 mt-2 mr-4 rounded-xl bg-muted/10 border border-border inline-block max-w-full">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center gap-1 hover:opacity-80"
+      >
+        {toolDescription}
+        <span className="text-xs ml-1">
+          {isExpanded ? '▼' : '▶'}
+        </span>
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-2 text-sm text-muted-foreground">
+          {tool.result && (
+            <>
+              <pre className="whitespace-pre-wrap break-words max-w-[calc(100vw-8rem)] overflow-x-auto">
+                {tool.result?.summary?.split('\\n').map((line: string, i: number) => (
+                  <span key={i}>
+                    {line}
+                    {i < tool.result.summary.split('\\n').length - 1 && <br />}
+                  </span>
+                )) || JSON.stringify(tool.result.summary, null, 2)}
+              </pre>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -51,7 +77,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
     <div className="h-full overflow-y-auto overscroll-none -webkit-overflow-scrolling-touch">
       <div className="w-full px-4">
         <div className="max-w-3xl mx-auto py-4">
-          {messages.map((message, index) => {
+          {messages.map((message: Message, index: number) => {
             const nextMessage = messages[index + 1];
             const prevMessage = messages[index - 1];
             const isConsecutiveAI = message.role === 'assistant' && nextMessage?.role === 'assistant';
@@ -75,7 +101,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
                 }`}>
                   <MarkdownRenderer content={message.content} />
                   
-                  {message.toolInvocations?.map((tool, idx) => (
+                  {message.toolInvocations?.map((tool: any, idx: number) => (
                     <ToolCallDisplay 
                       key={`${message.id}-tool-${idx}`} 
                       tool={tool} 

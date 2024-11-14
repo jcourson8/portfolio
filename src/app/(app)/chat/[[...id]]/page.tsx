@@ -9,6 +9,7 @@ import MessageInput from '@/components/MessageInput';
 import MessageDisplay from '@/components/MessageDisplay';
 import LandingIntro from '@/components/LandingIntro';
 import { useConversationContext } from '@/context/ConversationContext';
+import { Message } from '@/types';
 
 export default function ChatPage() {
   const params = useParams();
@@ -51,12 +52,12 @@ export default function ChatPage() {
     initialMessages: routeId 
       ? conversations.find(conv => conv.id === routeId)?.messages || [] 
       : [],
-    onFinish: (message) => {
+    onFinish: (message: Message) => {
       if (activeId) {
         updateConversation(activeId, messages);
       }
     },
-    onResponse: (response) => {
+    onResponse: (response: any) => {
       // Remove navigation from here since it's handled in handleMessageSubmit
       if (!activeId) {
         updateConversation(activeId!, messages);
