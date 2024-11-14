@@ -14,7 +14,7 @@ const reviveMessage = (message: Message): Message => {
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, _setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -65,9 +65,11 @@ export function useConversations() {
       id: newId,
       messages: []
     };
+
+    router.push(`/chat/${newId}`);
     
+    setSelectedConversation(newId);      
     setConversations(prev => [...prev, newConversation]);
-    _setSelectedConversation(newId);
     
     if (window.innerWidth > 768) {
       setIsSidebarExpanded(true);
@@ -76,18 +78,11 @@ export function useConversations() {
     return newId;
   };
 
-  const setSelectedConversation = (id: string | null) => {
-    if (id) {
-      router.push(`/chat/${id}`);
-    }
-    _setSelectedConversation(id);
-  };
-
   const deleteConversation = (id: string) => {
     setConversations(prev => prev.filter(conv => conv.id !== id));
     if (selectedConversation === id) {
       router.push('/chat');
-      _setSelectedConversation(null);
+      setSelectedConversation(null);
     }
   };
 

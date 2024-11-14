@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useChat } from 'ai/react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
@@ -13,7 +13,8 @@ import { useConversationContext } from '@/context/ConversationContext';
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id ? params.id[0] : undefined;
+  const routeId = params.id ? params.id[0] : undefined;
+  const [activeId, setActiveId] = useState<string | undefined>(routeId);
 
   const { 
     conversations,
@@ -23,6 +24,20 @@ export default function ChatPage() {
     updateConversation,
   } = useConversationContext();
 
+  // Custom submit handler to manage navigation and message flow
+  const handleMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!activeId) {
+      const newId = createNewConversation(); // This includes router.push
+      setActiveId(newId);
+      // Wait for next tick to ensure navigation has started
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    
+    handleSubmit(e);
+  };
+
   const {
     messages,
     input,
@@ -30,53 +45,56 @@ export default function ChatPage() {
     handleSubmit,
     isLoading,
     stop,
-    data, // Add this for streaming data
+    data,
   } = useChat({
-    id,
-    initialMessages: id 
-      ? conversations.find(conv => conv.id === id)?.messages || [] 
+    id: activeId,
+    initialMessages: routeId 
+      ? conversations.find(conv => conv.id === routeId)?.messages || [] 
       : [],
     onFinish: (message) => {
-      if (id) {
-        updateConversation(id, messages);
+      if (activeId) {
+        updateConversation(activeId, messages);
       }
     },
     onResponse: (response) => {
-      if (!id) {
-        const newId = createNewConversation();
-        updateConversation(newId, messages);
+      // Remove navigation from here since it's handled in handleMessageSubmit
+      if (!activeId) {
+        updateConversation(activeId!, messages);
       }
     },
     body: {
-      id,
-      // Add any additional context you want to send to the API
+      id: activeId,
     },
-    // Enable multi-step tool calling
     maxSteps: 3,
   });
 
+  // Sync activeId with route changes
+  useEffect(() => {
+    setActiveId(routeId);
+  }, [routeId]);
+
   // Save messages whenever they change
   useEffect(() => {
-    if (id && messages.length > 0) {
-      updateConversation(id, messages);
+    if (activeId && messages.length > 0) {
+      updateConversation(activeId, messages);
     }
-  }, [id, messages]);
+  }, [activeId, messages]);
 
   return (
-    <div className="flex h-screen">
-      <div className="flex flex-1 relative">
+    <div className="flex h-[100dvh] flex-col">
+      <Header 
+        toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+        showMenuButton={true} 
+      />
+      <div className="flex flex-1 relative overflow-hidden">
         <Sidebar
           isExpanded={isSidebarExpanded}
           toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          selectedConversation={id || null}
+          selectedConversation={activeId || null}
         />
-        <div className={`flex-1 flex flex-col transition-all duration-300`}>
-          <Header 
-            toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
-            showMenuButton={true} 
-          />
-          <div className="flex-1 overflow-y-auto relative pb-[100px] md:pb-0">
-            {id ? (
+        <div className="flex-1 flex flex-col relative w-full">
+          <div className="flex-1 overflow-hidden">
+            {activeId ? (
               <MessageDisplay 
                 messages={messages} 
                 isLoading={isLoading}
@@ -86,16 +104,14 @@ export default function ChatPage() {
               <LandingIntro />
             )}
           </div>
-          <div className="fixed bottom-0 left-0 right-0 bg-background md:relative">
-            <div className={`transition-all duration-300`}>
-              <MessageInput 
-                value={input}
-                onChange={handleInputChange}
-                onSubmit={handleSubmit}
-                isLoading={isLoading} 
-                onStop={stop}
-              />
-            </div>
+          <div className="relative bg-background">
+            <MessageInput 
+              value={input}
+              onChange={handleInputChange}
+              onSubmit={handleMessageSubmit}
+              isLoading={isLoading} 
+              onStop={stop}
+            />
           </div>
         </div>
       </div>
