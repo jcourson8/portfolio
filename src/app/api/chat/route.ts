@@ -1,5 +1,8 @@
 import { anthropic } from '@ai-sdk/anthropic';
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
+import { z } from 'zod';
+import { getProjects } from '@/actions/getProjects';
+import { Project } from '@/payload-types';
 import { NextRequest } from 'next/server';
 import { Message } from '@/types';
 
@@ -166,14 +169,43 @@ export async function POST(req: NextRequest) {
     const stream = await streamText({
       model,
       messages: [
-        { role: 'system', content: systemPrompt },
+        { 
+          role: 'system', 
+          content: `${systemPrompt}\n\nWhen users ask about projects or experience, always use the getProjects tool to fetch current information. After fetching the data, provide a natural response incorporating the retrieved information.` 
+        },
         ...formattedMessages
       ],
+      tools: {
+        getProjects: tool({
+          description: 'Get all projects from the portfolio database. Use this when asked about projects or technical experience.',
+          parameters: z.object({}),
+          execute: async () => {
+            try {
+              console.log('Executing getProjects tool...'); // Debug logging
+              const projects = await getProjects();
+              const formattedProjects = projects.map((project: Project) => ({
+                title: project.title,
+                description: project.description,
+                year: project.year,
+                technologies: project.technologies?.map(tech => tech.name),
+                githubUrl: project.githubUrl,
+                projectUrl: project.projectUrl
+              }));
+              console.log('Projects fetched:', formattedProjects); // Debug logging
+              return { projects: formattedProjects };
+            } catch (error) {
+              console.error('Error fetching projects:', error);
+              throw new Error('Failed to fetch projects');
+            }
+          },
+        }),
+      },
+      maxSteps: 3, // Allow multiple steps for tool usage
     });
 
     return stream.toDataStreamResponse();
   } catch (error) {
-    console.error('Error calling Anthropic API:', error);
+    console.error('Error in chat route:', error);
     return new Response(JSON.stringify({ error: 'An error occurred' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
