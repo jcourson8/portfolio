@@ -41,8 +41,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, showMenuButton = false }
             <span className="hover-underline-animation">Projects</span>
           </Link>
           <div className="flex items-center space-x-4">
-            <LinkedInIcon linkedinUrl="..." altText="LinkedIn" minimal />
-            <GithubIcon githubUrl="..." altText="GitHub" minimal />
+            <LinkedInIcon linkedinUrl="https://www.linkedin.com/in/james-courson-447960161/" altText="LinkedIn" minimal />
+            <GithubIcon githubUrl="https://github.com/jcourson8" altText="GitHub" minimal />
           </div>
         </nav>
       </div>
