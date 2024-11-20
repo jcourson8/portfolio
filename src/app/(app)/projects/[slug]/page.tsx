@@ -86,13 +86,18 @@ export async function generateMetadata(
   if (!project) return {}
 
   const previousImages = (await parent).openGraph?.images || []
+  const projectImage =  `${process.env.NEXT_PUBLIC_SERVER_URL}/og-image.png`
 
   return {
     title: project.title,
     description: project.description,
     openGraph: {
-      images: [...previousImages]
-    }
+      title: `${project.title} | James Courson`,
+      description: project.description,
+      type: 'article',
+      images: projectImage ? [projectImage, ...previousImages] : previousImages,
+      modifiedTime: project.updatedAt,
+    },
   }
 }
 

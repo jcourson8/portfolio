@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://james-courson.vercel.app/sitemap.xml 

@@ -7,6 +7,7 @@ import { getProjects } from '@/actions/getProjects';
 import ProjectCard, { ProjectCardSkeleton } from '@/components/ProjectCard';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+import { Metadata } from 'next'
 
 const ProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);

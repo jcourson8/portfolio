@@ -5,6 +5,7 @@ import { FaGithub, FaEnvelope } from 'react-icons/fa';
 import { useTheme } from '@/hooks/useTheme';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+
 const projects = [
   {
     title: "Conversational Codebase",

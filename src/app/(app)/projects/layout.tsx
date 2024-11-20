@@ -1,4 +1,13 @@
 import RootLayout from '../../(app)/layout'
+import { Metadata } from 'next'
+export const metadata: Metadata = {
+  title: 'Projects',
+  description: 'Explore my portfolio of software engineering projects, featuring AI, cybersecurity, and full-stack development work.',
+  openGraph: {
+    title: 'Projects | James Courson',
+    description: 'Explore my portfolio of software engineering projects, featuring AI, cybersecurity, and full-stack development work.',
+  }
+}
 
 export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
   return (
