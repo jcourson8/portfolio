@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'James Courson | Developer',
+    default: 'James Courson | Chat',
     template: '%s | James Courson'
   },
   description: 'Software engineer specializing in AI, cybersecurity, and full-stack development.',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://james-courson.vercel.app',
     siteName: 'James Courson',
-    title: 'James Courson | Developer',
+    title: 'James Courson | Chat',
     description: 'Software engineer specializing in AI, cybersecurity, and full-stack development.',
     images: [
       {
