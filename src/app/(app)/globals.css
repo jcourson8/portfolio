@@ -14,8 +14,6 @@ html.transitioning {
 
 @layer base {
   :root {
-    --safe-area-bg: 0 0% 100%;
-
     --background: 0 0% 100%;
 
     --foreground: 240 10% 3.9%;
@@ -67,13 +65,8 @@ html.transitioning {
     --radius: 0.5rem
   }
   .dark {
-    --safe-area-bg: 0 0% 7.8%;
-
-    /* --background: 240 10% 3.9%; */
     --background: 0 0% 7.8%;
-    /* --background: 216 25% 11%; */
-    /* --background: 0 0% 12.2%; */
-    --dark: 240 10% 3.9%;
+    --dark: 0 0% 7.8%;
 
     --foreground: 0 0% 98%;
 
@@ -181,14 +174,14 @@ html.transitioning {
 
   @supports (padding-top: env(safe-area-inset-top)) {
     body {
-      background-color: hsl(var(--safe-area-bg));
+      background-color: hsl(var(--background));
       min-height: 100vh;
       min-height: -webkit-fill-available;
     }
   }
 
   html {
-    background-color: hsl(var(--safe-area-bg));
+    background-color: hsl(var(--background));
     height: -webkit-fill-available;
   }
 
