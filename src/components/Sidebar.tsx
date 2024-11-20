@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <>
       <div 
         className={`
-          fixed inset-0 bg-background/80 backdrop-blur-sm z-40 
+          fixed inset-0 bg-background/80 backdrop-blur-sm z-50 
           transition-all duration-300 sm:hidden
           ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}
         `} 
@@ -158,10 +158,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             ease: [0.25, 0.1, 0.25, 1.0],
           }}
           className={`
-            h-full
+            h-[100dvh] md:h-full
             ${isExpanded ? 'border-r border-border' : ''} bg-background
             fixed md:relative z-50
             overflow-hidden
+            top-0 left-0
           `}
         >
           <motion.div
