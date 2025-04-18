@@ -181,6 +181,39 @@ const ResumePage: React.FC = () => {
       <motion.section className="mb-12">
         <h2 className="text-2xl font-normal tracking-tight mb-6">Employment</h2>
         
+        {/* Software Engineer at Room2Room Movers */}
+        <div className="border-b border-neutral-200 pb-2 mb-6">
+          <div className="flex justify-between items-baseline">
+            <div>
+              <h3 className="text-xl font-normal tracking-tight">Software Engineer</h3>
+              <p className="text-sm font-light text-neutral-500">Room2Room Movers</p>
+            </div>
+            <span className="text-sm font-light text-muted">Jan 2025—Present</span>
+          </div>
+        </div>
+
+        <div className="space-y-6 mb-12">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Full-Stack Development</p>
+            <p className="text-sm font-light">Building r2rmovers.com and developing admin software to enable scaling to multiple campuses.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Multi-Campus Solutions</p>
+            <p className="text-sm font-light">Redesigned scalable multi-campus admin dashboard and integrated comprehensive customer contact flow systems.</p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Custom Systems</p>
+            <p className="text-sm font-light">Designed and implemented a custom customer lifecycle email sequence system that integrates tightly with provided services and built out mover applications process.</p>
+          </div>
+          
+          <div>
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Technologies</p>
+            <p className="text-sm font-light">TypeScript, Vite, Firebase, Full-Stack Development, DevOps, User Experience (UX)</p>
+          </div>
+        </div>
+        
         {/* Software Engineer at Military REACH */}
         <div className="border-b border-neutral-200 pb-2 mb-6">
           <div className="flex justify-between items-baseline">
@@ -317,7 +350,7 @@ const ResumePage: React.FC = () => {
           <div>
             <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Technologies</p>
             <p className="text-sm font-light">
-              OpenAI API · PyTorch · Flask · LangChain · NextJS · Leptos · Git · Linux · IDA · Docker · Ansible · Openstack · Ceph · Kubernetes
+              OpenAI API · Firebase · Vite · PyTorch · Flask · LangChain · NextJS · Leptos · Git · Linux · IDA · Docker · Ansible · Openstack · Ceph · Kubernetes
             </p>
           </div>
 
