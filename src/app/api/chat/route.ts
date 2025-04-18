@@ -5,7 +5,7 @@ import { getProjects } from '@/actions/getProjects';
 import { getFormattedProjects } from '@/actions/getFormatedProject';
 import { NextRequest } from 'next/server';
 
-const model = anthropic('claude-3-haiku-20240307', {
+const model = anthropic('claude-3-7-sonnet-20250219', {
   cacheControl: true,
 });
 // const model = anthropic('claude-3-5-sonnet-20240620', {
